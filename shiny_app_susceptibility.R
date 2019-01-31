@@ -9,6 +9,9 @@ library(truncnorm)
 library(stringr)
 library(igraph)
 
+## Set up option for maximum file input size
+options(shiny.maxRequestSize=50*1024^2) # please, please, please try to be conservative with upload sizes
+
 ui <- fluidPage(
   
   # App title
