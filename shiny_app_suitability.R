@@ -2,6 +2,7 @@
 
 library(shiny)
 library(dplyr)
+library(tidyr)
 library(raster)
 library(zip)
 library(sp)
@@ -276,7 +277,7 @@ server <- function(input, output){
     i_est <- (nn_per + 1):(nn_per + nn_est)
     
     ## Read in rasters as stack
-    drop_ind <- 1:length(c(persistence, establishment)) - 1
+    drop_ind <- 1:(length(c(persistence, establishment)) - 1)
     suit_ras <- stack(c(persistence, establishment))
     suit_ras_df <- as.data.frame(suit_ras)
     suit_ras <- dropLayer(suit_ras, drop_ind)
@@ -347,12 +348,14 @@ server <- function(input, output){
     }
     
     # Derive ID column
-    suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
+    # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
+    suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
     suit_ras_df_dn$Suitability <- st
     suit_ras_df_dn$Suitability_SD <- st_sd
     
     # Join back to full dataset
-    suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
+    # suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
+    suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
     s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = "id")
     
     rm(suit_ras_df, suit_ras_df_dn)
