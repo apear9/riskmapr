@@ -78,40 +78,9 @@ ui <- fluidPage(
       
       hr(),
       
-      fileInput(
-        "propagule_pressure", 
-        "Spatial proxies for propagule pressure:",
-        multiple = TRUE,
-        accept = c(".tif")
-      ),
-      
-      textInput(
-        "propagule_weights",
-        "Choose weights for propagule pressure proxies:",
-        "Enter values separated by commas or other common separators"
-      ),
-      
-      numericInput(
-        "prg_sd", 
-        "Standard deviation for the propagule pressure node:",
-        value = 15,
-        min = 0.1,
-        max = 1000
-      ),
-      
-      hr(),
-      
       numericInput(
         "suitability_sd", 
         "Standard deviation for the suitability node:",
-        value = 10,
-        min = 0.1,
-        max = 1000
-      ),
-      
-      numericInput(
-        "susceptibility_sd", 
-        "Standard deviation for the susceptiblity node:",
         value = 10,
         min = 0.1,
         max = 1000
@@ -123,12 +92,6 @@ ui <- fluidPage(
         "suit_name",
         "Optional: enter file name for suitability raster, no file extension",
         "Suitability"
-      ),
-      
-      textInput(
-        "susc_name",
-        "Optional: enter file name for susceptibility raster, no file extension",
-        "Susceptibility"
       ),
       
       helpText("You can choose the names of the downloadable files produced by this app by replacing the values in the two fields above with your own text."),
@@ -198,11 +161,11 @@ server <- function(input, output){
     
     ### Lay out basic network structure (five essential nodes)
     basic_network <- data.frame(
-      from = c(1, 2, 3, 4),
-      to = c(3, 3, 5, 5)
+      from = c(1, 2),
+      to = c(3, 3)
     )
     vertex_info <- data.frame(
-      ID = 1:5, 
+      ID = 1:3, 
       Name = c(
         "Establishment", 
         "Persistence",
@@ -213,7 +176,7 @@ server <- function(input, output){
     ### Add to basic network structure based on inputs
     n_est <- length(establishment)
     n_per <- length(persistence)
-    est_id <- 6:(5 + n_est)
+    est_id <- 4:(3 + n_est)
     per_id <- (max(est_id) + 1):(max(est_id) + n_per)
     new_connections <- data.frame(
       from = c(est_id, per_id),
