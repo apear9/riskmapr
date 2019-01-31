@@ -2,6 +2,7 @@
 
 library(shiny)
 library(dplyr)
+library(tidyr)
 library(raster)
 library(zip)
 library(sp)
@@ -339,23 +340,28 @@ server <- function(input, output){
     i_prg <- (nn_per + nn_est + 1):(nn_per + nn_est + nn_pgl)
     
     ## Read in rasters as stack
+    drop_ind <- 1:(length(c(persistence, establishment, propagule)) - 1)
     suit_ras <- stack(c(persistence, establishment, propagule))
     suit_ras_df <- as.data.frame(suit_ras)
+    suit_ras <- dropLayer(suit_ras, drop_ind)
     
     ## Extract distinct rows WITHOUT rows involving NAs.
-    suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
-    suit_ras_df_dn <- suit_ras_df_dn[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
-    suit_ras_df_dn <- suit_ras_df_dn[apply(
-      suit_ras_df_dn, 
-      1, 
-      function(x) !(any(x > 100) | any(x < 0))), ]
+    # suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
+    suit_ras_df_dn <- distinct(suit_ras_df)
+    # suit_ras_df_dn <- suit_ras_df_dn[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
+    suit_ras_df_dn <- na.omit(suit_ras_df_dn)
+    # suit_ras_df_dn <- suit_ras_df_dn[apply(
+    #   suit_ras_df_dn, 
+    #   1, 
+    #   function(x) !(any(x > 100) | any(x < 0))), ]
+    suit_ras_df_dn <- filter_all(suit_ras_df_dn, all_vars(. >= 0 & . <= 100))
     
     # Subsets as required for the analysis
-    per_cols <- as.matrix(suit_ras_df_dn[, i_per])
+    # per_cols <- as.matrix(suit_ras_df_dn[, i_per])
     per_wets <- persistence_wts 
-    est_cols <- as.matrix(suit_ras_df_dn[, i_est])
+    # est_cols <- as.matrix(suit_ras_df_dn[, i_est])
     est_wets <- establishment_wts 
-    prg_cols <- as.matrix(suit_ras_df_dn[, i_prg])
+    # prg_cols <- as.matrix(suit_ras_df_dn[, i_prg])
     prg_wets <- propagule_wts
     
     ## Compute distribution of suitability 
@@ -367,14 +373,16 @@ server <- function(input, output){
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
-      est_vars <- est_cols[i, ]
+      # est_vars <- est_cols[i, ]
+      est_vars <- suit_ras_df_dn[i, i_est]
       est_mean <- sum(est_vars * est_wets)/sum(est_wets)
       est <- dtruncnorm(seq(0, 100, 25), 0, 100, est_mean, establishment_sd)
       est <- est/sum(est)
       names(est) <- seq(0, 100, 25)
       
       # Persistence
-      per_vars <- per_cols[i, ]
+      # per_vars <- per_cols[i, ]
+      per_vars <- suit_ras_df_dn[i, i_per]
       per_mean <- sum(per_vars * per_wets)/sum(per_wets)
       per <- dtruncnorm(seq(0, 100, 25), 0, 100, per_mean, persistence_sd)
       per <- per/sum(per)
@@ -403,7 +411,8 @@ server <- function(input, output){
       st_sd[i] <- std_discrete(suit)
       
       # Now construct the propagule pressure node
-      prg_vars <- prg_cols[i, ]
+      # prg_vars <- prg_cols[i, ]
+      prg_vars <- suit_ras_df_dn[i, i_prg]
       prg_mean <- sum(prg_vars * prg_wets)/sum(prg_wets)
       prg <- dtruncnorm(seq(0, 100, 25), 0, 100, prg_mean, propagule_sd)
       prg <- prg/sum(prg)
@@ -432,15 +441,19 @@ server <- function(input, output){
     }
     
     # Derive ID column
-    suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
+    # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
+    suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
     suit_ras_df_dn$Suitability <- st
     suit_ras_df_dn$Suitability_SD <- st_sd
     suit_ras_df_dn$Susceptibility <- sc
     suit_ras_df_dn$Susceptibility_SD <- sc_sd
     
     # Join back to full dataset
-    suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
+    # suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
+    suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
     s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = "id")
+    
+    rm(suit_ras_df, suit_ras_df_dn)
     
     ### Put back into raster
     suit_ras$Suitability <- s_result$Suitability
@@ -448,7 +461,7 @@ server <- function(input, output){
     suit_ras$Susceptibility <- s_result$Susceptibility
     suit_ras$Susceptibility_SD <- s_result$Susceptibility_SD
     
-    rm(s_result, suit_ras_df_dn, st, st_sd, sc, sc_sd)
+    rm(s_result, st, st_sd, sc, sc_sd)
     
     suit_ras
     
@@ -457,9 +470,8 @@ server <- function(input, output){
   output$mainplot <- renderPlot(
     {
       
-      suit_ras <- the_plots()
       ### Plot
-      spplot(suit_ras, c("Suitability", "Susceptibility"))
+      spplot(the_plots(), c("Suitability", "Susceptibility"))
       
     }
   )
