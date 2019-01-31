@@ -276,40 +276,47 @@ server <- function(input, output){
     i_est <- (nn_per + 1):(nn_per + nn_est)
     
     ## Read in rasters as stack
+    drop_ind <- 1:length(c(persistence, establishment)) - 1
     suit_ras <- stack(c(persistence, establishment))
     suit_ras_df <- as.data.frame(suit_ras)
+    suit_ras <- dropLayer(suit_ras, drop_ind)
     
     ## Extract distinct rows WITHOUT rows involving NAs.
-    suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
-    suit_ras_df_dn <- suit_ras_df_dn[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
-    suit_ras_df_dn <- suit_ras_df_dn[apply(
-      suit_ras_df_dn, 
-      1, 
-      function(x) !(any(x > 100) | any(x < 0))), ]
+    #suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
+    suit_ras_df_dn <- distinct(suit_ras_df)
+    # suit_ras_df_dn <- na.omit(suit_ras_df_dn)[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
+    suit_ras_df_dn <- na.omit(suit_ras_df_dn)
+    # suit_ras_df_dn <- suit_ras_df_dn[apply(
+    #   suit_ras_df_dn, 
+    #   1, 
+    #   function(x) !(any(x > 100) | any(x < 0))), ]
+    suit_ras_df_dn <- filter_all(suit_ras_df_dn, all_vars(. >= 0 & . <= 100))
     
     # Subsets as required for the analysis
-    per_cols <- as.matrix(suit_ras_df_dn[, i_per])
+    # per_cols <- as.matrix(suit_ras_df_dn[, i_per])
     per_wets <- persistence_wts 
-    est_cols <- as.matrix(suit_ras_df_dn[, i_est])
+    # est_cols <- as.matrix(suit_ras_df_dn[, i_est])
     est_wets <- establishment_wts 
     
     ## Compute distribution of suitability 
     
     # Empty numeric vectors
-    st <- st_sd <- sc <- sc_sd <- numeric(nrow(suit_ras_df_dn))
+    st <- st_sd <- numeric(nrow(suit_ras_df_dn))
     
     # Main loop
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
-      est_vars <- est_cols[i, ]
+      # est_vars <- est_cols[i, ]
+      est_vars <- suit_ras_df_dn[i, i_est]
       est_mean <- sum(est_vars * est_wets)/sum(est_wets)
       est <- dtruncnorm(seq(0, 100, 25), 0, 100, est_mean, establishment_sd)
       est <- est/sum(est)
       names(est) <- seq(0, 100, 25)
       
       # Persistence
-      per_vars <- per_cols[i, ]
+      # per_vars <- per_cols[i, ]
+      per_vars <- suit_ras_df_dn[i, i_per]
       per_mean <- sum(per_vars * per_wets)/sum(per_wets)
       per <- dtruncnorm(seq(0, 100, 25), 0, 100, per_mean, persistence_sd)
       per <- per/sum(per)
@@ -348,11 +355,13 @@ server <- function(input, output){
     suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
     s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = "id")
     
+    rm(suit_ras_df, suit_ras_df_dn)
+    
     ### Put back into raster
     suit_ras$Suitability <- s_result$Suitability
     suit_ras$Suitability_SD <- s_result$Suitability_SD
     
-    rm(s_result, suit_ras_df_dn, st, st_sd)
+    rm(s_result, st, st_sd)
     
     suit_ras
     
@@ -360,10 +369,9 @@ server <- function(input, output){
   
   output$mainplot <- renderPlot(
     {
-      
-      suit_ras <- the_plots()
+
       ### Plot
-      spplot(suit_ras, "Suitability")
+      spplot(the_plots(), "Suitability")
       
     }
   )
