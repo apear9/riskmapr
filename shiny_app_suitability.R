@@ -8,7 +8,7 @@ library(zip)
 library(sp)
 library(truncnorm)
 library(stringr)
-library(igraph)
+library(visNetwork)
 
 ## Set up option for maximum file input size
 options(shiny.maxRequestSize=50*1024^2) # please, please, please try to be conservative with upload sizes
@@ -114,7 +114,7 @@ ui <- fluidPage(
     ),
     
     mainPanel(
-      plotOutput("valiplot"),
+      visNetworkOutput("valiplot"),
       plotOutput("mainplot")
     )
     
@@ -161,17 +161,36 @@ server <- function(input, output){
     establishment_wts <- as.numeric(establishment_wts)
     
     ### Lay out basic network structure (five essential nodes)
+    # basic_network <- data.frame(
+    #   from = c(1, 2),
+    #   to = c(3, 3)
+    # )
     basic_network <- data.frame(
       from = c(1, 2),
-      to = c(3, 3)
+      to = c(3, 3),
+      arrows = "to"
     )
+    # vertex_info <- data.frame(
+    #   ID = 1:3, 
+    #   Name = c(
+    #     "Establishment", 
+    #     "Persistence",
+    #     "Suitability"
+    #   )
+    # )
     vertex_info <- data.frame(
-      ID = 1:3, 
-      Name = c(
+      id = 1:3, 
+      label = c(
         "Establishment", 
         "Persistence",
         "Suitability"
-      )
+      ),
+      value = 1:3,
+      group = "Not user-specified",
+      shape = rep("box", 3),
+      color = "black",
+      font.color = "white",
+      shadow = rep(TRUE, 3)
     )
     
     ### Add to basic network structure based on inputs
@@ -179,14 +198,33 @@ server <- function(input, output){
     n_per <- length(persistence)
     est_id <- 4:(3 + n_est)
     per_id <- (max(est_id) + 1):(max(est_id) + n_per)
+    
+    # new_connections <- data.frame(
+    #   from = c(est_id, per_id),
+    #   to   = c(rep(1, n_est), rep(2, n_per))
+    # )
     new_connections <- data.frame(
       from = c(est_id, per_id),
-      to   = c(rep(1, n_est), rep(2, n_per))
+      to   = c(rep(1, n_est), rep(2, n_per)),
+      arrows = "to"
     )
+    # new_vertex_info <- data.frame(
+    #   ID = c(est_id, per_id), 
+    #   Name = c(establishment, persistence)
+    # )
+    
+    n_elem <- length(c(establishment, persistence))
     new_vertex_info <- data.frame(
-      ID = c(est_id, per_id), 
-      Name = c(establishment, persistence)
+      id = c(est_id, per_id), 
+      label = c(establishment, persistence),
+      value = c(est_id, per_id),
+      group = paste("Weight =", c(establishment_wts, persistence_wts)),
+      shape = rep("ellipse", n_elem),
+      color = colour_labeller_vectorised(c(establishment_wts, persistence_wts)),
+      font.color = "white",
+      shadow = rep(FALSE, n_elem)
     )
+    
     all_network <- rbind(
       basic_network,
       new_connections
@@ -195,27 +233,31 @@ server <- function(input, output){
       vertex_info,
       new_vertex_info
     )
-    the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
-    the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
-    V(the_graph)$Name <- as.character(all_vertex$Name)
-    V(the_graph)$color <- "white"
-    E(the_graph)$color <- c(rep("grey10", 2), colour_labeller_vectorised(
-      c(establishment_wts, persistence_wts)))
+    # the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
+    # the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
+    # V(the_graph)$Name <- as.character(all_vertex$Name)
+    # V(the_graph)$color <- "white"
+    # E(the_graph)$color <- c(rep("grey10", 2), colour_labeller_vectorised(
+    #   c(establishment_wts, persistence_wts)))
+    # 
+    the_graph <- visNetwork(all_vertex, all_network, height = "600px", width = "100%") %>% #,
+      visGroups(groupname = "Weight = 1", color = "forestgreen", font = list(color = "white")) %>%
+      visGroups(groupname = "Weight = 2", color = "orange", font = list(color = "white")) %>%
+      visGroups(groupname = "Weight = 3", color = "red", font = list(color = "white")) %>%
+      visGroups(groupname = "Not user-specified", color = "black", shape = "box", font = list(color = "white")) %>%
+      visLegend(main = "Legend") %>%
+      visPhysics(enabled = FALSE)
     
     the_graph
     
   }
   )
   
-  output$valiplot <- renderPlot(
+  output$valiplot <- renderVisNetwork(
     {
-      the_graph <- the_graph()
-      ### Plot
-      plot(
-        the_graph,
-        layout = layout_with_dh,
-        vertex.label = V(the_graph)$Name, vertex.size = 35, edge.arrow.size = 0.3
-      )
+      
+      the_graph()
+      
     }
   )
   
