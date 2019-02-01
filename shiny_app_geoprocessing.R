@@ -18,7 +18,7 @@ ui <- fluidPage(
       selectInput(
         inputId = "which",
         label = "Select the geoprocessing workflow you need:",
-        choices = c("None", "Project shapefile", "Project raster", "Crop to extent", "Propagule supply", "Zoochory", "Hydrochory", "Stream edge to raster", "Recode stream raster"), 
+        choices = c("None", "Project shapefile", "Project raster", "Crop to extent", "Propagule supply", "Anemochory", "Zoochory", "Agochory", "Hydrochory", "Stream edge to raster", "Recode stream raster"), 
         selected = "None", 
         multiple = FALSE
       ),
@@ -328,8 +328,8 @@ server <- function(input, output){
   # This code updates the UI
   output$Stream_raster <- renderUI(
     {
-      if(input$which %in% c("Hydrochory", "Recode stream raster")){
-        fileInput("stream_raster", "Upload a stream raster", FALSE, ".tif")
+      if(input$which %in% c("Hydrochory", "Agochory", "Recode stream raster")){
+        fileInput("stream_raster", "Upload a raster of a linear feature", FALSE, ".tif")
       }
     }
   )
@@ -360,7 +360,7 @@ server <- function(input, output){
   
   output$Detections <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Crop to extent")){
+      if(input$which %in% c("Propagule supply", "Zoochory", "Anemochory", "Hydrochory", "Agochory", "Crop to extent")){
         fileInput("detections", "Upload shapefile of the detection records", TRUE)
       }
     }
@@ -392,7 +392,7 @@ server <- function(input, output){
   
   output$Reference_raster <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Stream edge to raster")){
+      if(input$which %in% c("Propagule supply", "Zoochory", "Anemochory", "Hydrochory", "Zoochory", "Agochory", "Stream edge to raster")){
         fileInput("reference_raster", "Upload the reference raster", FALSE, ".tif")
       }
     }
@@ -416,7 +416,7 @@ server <- function(input, output){
   
   output$Distance_thresholds <- renderUI(
     {
-      if(input$which %in% c("Zoochory", "Hydrochory")){
+      if(input$which %in% c("Zoochory", "Hydrochory", "Agochory", "Anemochory")){
         textInput("distance_thresholds", "The distance thresholds for each proxy level", "")
       }
     }
@@ -424,7 +424,7 @@ server <- function(input, output){
   
   output$Proxy_levels <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory")){
+      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Anemochory", "Agochory")){
         textInput("proxy_levels", "The proxy levels corresponding to the distance or abundance thresholds", "")
       }
     }
@@ -432,8 +432,8 @@ server <- function(input, output){
   
   output$Max_radius <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Crop to extent")){
-        numericInput("max_radius", "Maximum radius", 1000, min = 0, max = 1e6)
+      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Anemochory", "Agochory", "Crop to extent")){
+        numericInput("max_radius", "Maximum radius (m)", 1000, min = 0, max = 1e6)
       }
     }
   )
@@ -523,7 +523,7 @@ server <- function(input, output){
         
       }
       
-      if(input$which == "Zoochory"){
+      if(input$which %in% c("Zoochory", "Anemochory")){
         
         # Ingest detection records
         files <- input$detections$datapath
@@ -558,7 +558,7 @@ server <- function(input, output){
         result <- zoochory(detections, reference_raster, distance_thresholds, proxy_levels, max_radius)
       }
       
-      if(input$which == "Hydrochory"){
+      if(input$which %in% c("Hydrochory", "Agochory")){
         
         # Ingest stream raster
         stream_raster <- input$stream_raster
