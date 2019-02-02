@@ -161,23 +161,11 @@ server <- function(input, output){
     establishment_wts <- as.numeric(establishment_wts)
     
     ### Lay out basic network structure (five essential nodes)
-    # basic_network <- data.frame(
-    #   from = c(1, 2),
-    #   to = c(3, 3)
-    # )
     basic_network <- data.frame(
       from = c(1, 2),
       to = c(3, 3),
       arrows = "to"
     )
-    # vertex_info <- data.frame(
-    #   ID = 1:3, 
-    #   Name = c(
-    #     "Establishment", 
-    #     "Persistence",
-    #     "Suitability"
-    #   )
-    # )
     vertex_info <- data.frame(
       id = 1:3, 
       label = c(
@@ -199,19 +187,11 @@ server <- function(input, output){
     est_id <- 4:(3 + n_est)
     per_id <- (max(est_id) + 1):(max(est_id) + n_per)
     
-    # new_connections <- data.frame(
-    #   from = c(est_id, per_id),
-    #   to   = c(rep(1, n_est), rep(2, n_per))
-    # )
     new_connections <- data.frame(
       from = c(est_id, per_id),
       to   = c(rep(1, n_est), rep(2, n_per)),
       arrows = "to"
     )
-    # new_vertex_info <- data.frame(
-    #   ID = c(est_id, per_id), 
-    #   Name = c(establishment, persistence)
-    # )
     
     n_elem <- length(c(establishment, persistence))
     new_vertex_info <- data.frame(
@@ -233,13 +213,6 @@ server <- function(input, output){
       vertex_info,
       new_vertex_info
     )
-    # the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
-    # the_graph <- graph_from_data_frame(all_network, TRUE, all_vertex)
-    # V(the_graph)$Name <- as.character(all_vertex$Name)
-    # V(the_graph)$color <- "white"
-    # E(the_graph)$color <- c(rep("grey10", 2), colour_labeller_vectorised(
-    #   c(establishment_wts, persistence_wts)))
-    # 
     the_graph <- visNetwork(all_vertex, all_network, height = "600px", width = "100%") %>% #,
       visGroups(groupname = "Weight = 1", color = "forestgreen", font = list(color = "white")) %>%
       visGroups(groupname = "Weight = 2", color = "orange", font = list(color = "white")) %>%
