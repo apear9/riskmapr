@@ -8,7 +8,6 @@ library(zip)
 library(sp)
 library(truncnorm)
 library(stringr)
-# library(igraph)
 library(visNetwork)
 
 ## Set up option for maximum file input size
