@@ -17,7 +17,7 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Bayesian network for invasion suitability and susceptibility"),
+  titlePanel("Rapid riskmapr - suitability for weed invasion"),
   
   # Sidebar panel for inputs ----
   
@@ -29,87 +29,95 @@ ui <- fluidPage(
       
       fileInput(
         "establishment", 
-        "Spatial proxies for establishment:",
+        "Spatial proxies for risk factors (establishment)",
         multiple = TRUE,
         accept = c(".tif")
       ),
-      
-      helpText("Click on 'Browse...'. A new window should pop up, where you can select some raster files (with a .tif extension) to upload. Select these files and click 'Open'. Note that, if multiple files are selected, the files will be uploaded in alphabetical order by filename."),
+
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for <20MB."),
       
       textInput(
         "establishment_weights",
-        "Choose weights for establishment proxies:",
-        "Enter values separated by commas or other common separators"
+        "Risk factor weights (establishment)"
       ),
       
-      helpText("Delete the text currently in the text input field, and replace it with a set of numbers from 1 to 3, separated by commas. These should correspond to the alphabetically ordered rasters you uploaded in the field above."),
+      helpText("Enter weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
       
       numericInput(
         "est_sd", 
-        "Standard deviation for the establishment node:",
+        "Standard deviation (establishment)",
         value = 15,
         min = 0.1,
         max = 1000
       ),
       
-      helpText("You can change the number above to any value between, and including, 0.1 and 1000. Don't change anything if you want to accept the default value of 15."),
+      helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
       
       hr(),
       
       fileInput(
         "persistence", 
-        "Spatial proxies for persistence:",
+        "Spatial proxies for risk factors (persistence)",
         multiple = TRUE,
         accept = c(".tif")
       ),
       
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. Details see above."),
+      
       textInput(
         "persistence_weights",
-        "Choose weights for persistence proxies:",
-        "Enter values separated by commas or other common separators"
+        "Risk factor weights (persistence)"
       ),
+      
+      helpText("Enter the weights for all identified risk factors affecting plant persistence. Details see above"),
       
       numericInput(
         "per_sd", 
-        "Standard deviation for the persistence node:",
+        "Standard deviation (persistence)",
         value = 15,
         min = 0.1,
         max = 1000
       ),
       
+      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. Details see above."),
+      
       hr(),
       
       numericInput(
         "suitability_sd", 
-        "Standard deviation for the suitability node:",
+        "Standard deviation (suitability)",
         value = 10,
         min = 0.1,
         max = 1000
       ),
       
+      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
+      
+      hr(),
+      
+      actionButton("validate", "Visualize risk model"),
+      
+      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies and risk factor weights (colour-coded network links)."),
+      
+      actionButton("submit", "Run risk model"),
+      
+      helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
+      
       hr(),
       
       textInput(
         "suit_name",
-        "Optional: enter file name for suitability raster, no file extension",
+        "Optional: name risk map (suitability)",
         "Suitability"
       ),
       
-      helpText("You can choose the names of the downloadable files produced by this app by replacing the values in the two fields above with your own text."),
+      helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."),
       
       hr(),
       
-      actionButton("validate", "Click to view network model (validate)"),
+      downloadButton(outputId = "downloadData", label = "Download risk map"),
       
-      helpText("Clicking on the button above will cause the app to display a graph of the Bayesian network you have constructed by uploading files and entering inputs. Use this to check that the structure of the network is fine."),
-      
-      actionButton("submit", "Click to produce risk maps (run program)"),
-      
-      helpText("Clicking on the button above will cause the app to compute the invasion risk maps for your study area. Once this is finished, you will see a plot of the study area appear to the right."),
-      
-      downloadButton(outputId = "downloadData", label = "DOWNLOAD OUTPUTS"),
-      
-      helpText("Click on the above button to download a zip folder containing the spatial risk maps and uncertainty maps. This will only work if you can see the plot of the study area to the right.")
+      helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
       
     ),
     
