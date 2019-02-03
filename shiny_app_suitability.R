@@ -371,6 +371,7 @@ server <- function(input, output){
       
     }
     
+    
     # Derive ID column
     # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
     suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
@@ -384,11 +385,13 @@ server <- function(input, output){
     
     rm(suit_ras_df, suit_ras_df_dn)
     
+    
     ### Put back into raster
     suit_ras$Suitability <- s_result$Suitability
     suit_ras$Suitability_SD <- s_result$Suitability_SD
     
     rm(s_result, st, st_sd)
+    
     
     suit_ras
     
