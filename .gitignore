@@ -2,3 +2,7 @@
 *.tif
 .Rhistory
 *.dcf
+*.dbf
+*.prj
+*.shp
+Output_File.shx
