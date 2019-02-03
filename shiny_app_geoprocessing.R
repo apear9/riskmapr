@@ -21,7 +21,7 @@ ui <- fluidPage(
         label = "Select the geoprocessing workflow you need:",
         choices = c(
           "None", 
-          "Project shapefile", 
+          "Project detection records", 
           #"Project raster", 
           "Crop to extent", 
           "Propagule supply", 
@@ -381,7 +381,7 @@ server <- function(input, output){
   
   output$Generic_raster <- renderUI(
     {
-      if(input$which %in% c("Crop to extent", "Project raster", "Project shapefile")){
+      if(input$which %in% c("Crop to extent", "Project raster", "Project detection records")){
         fileInput("generic_raster", "Upload a raster (.tif extension)", FALSE, ".tif")
       }
     }
@@ -389,15 +389,15 @@ server <- function(input, output){
   
   output$Generic_shapefile <- renderUI(
     {
-      if(input$which %in% c("Project shapefile")){
-        fileInput("generic_shapefile", "Upload a shapefile", TRUE)
+      if(input$which %in% c("Project detection records")){
+        fileInput("generic_shapefile", "Upload a shapefile of the detection records", TRUE)
       }
     }
   )
   
   # output$Proj4string <- renderUI(
   #   {
-  #     if(input$which %in% c("Project shapefile", "Project raster")){
+  #     if(input$which %in% c("Project detection records", "Project raster")){
   #       textInput("proj4string", "Enter a proj4string (see spatialreference.org for proj4strings):", "+init=epsg:4326")
   #     }
   #   }
@@ -654,7 +654,7 @@ server <- function(input, output){
       #   
       # }
       
-      if(input$which == "Project shapefile"){
+      if(input$which == "Project detection records"){
 
         # Ingest shapefile
         files <- input$generic_shapefile$datapath
@@ -686,7 +686,7 @@ server <- function(input, output){
   output$Download <- downloadHandler(
     
     filename = function(){
-      if(input$which != "Project shapefile"){
+      if(input$which != "Project detection records"){
         paste0(input$output_name, ".tif")
       } else {
         paste0(input$output_name, ".zip")
@@ -697,7 +697,7 @@ server <- function(input, output){
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
-      if(input$which != "Project shapefile"){
+      if(input$which != "Project detection records"){
         writeRaster(the_data(), file)
       } else {
         shapefile(the_data(), paste0(input$output_name, ".shp"), overwrite = TRUE)
