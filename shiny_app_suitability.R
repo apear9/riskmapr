@@ -1,5 +1,6 @@
 ## Back end for suitability/susceptibility BN
 
+library(rgdal)
 library(shiny)
 library(dplyr)
 library(tidyr)

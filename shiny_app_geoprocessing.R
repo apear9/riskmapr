@@ -1,3 +1,4 @@
+library(rgdal)
 library(raster)
 library(rgeos)
 library(sp)
