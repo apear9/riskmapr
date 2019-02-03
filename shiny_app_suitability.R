@@ -231,7 +231,7 @@ server <- function(input, output){
   
   output$valiplot <- renderVisNetwork(
     {
-      print(pryr::mem_used())
+
       the_graph()
       
     }
