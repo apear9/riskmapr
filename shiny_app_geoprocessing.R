@@ -62,7 +62,7 @@ ui <- fluidPage(
       
       uiOutput("Max_radius"),
       
-      uiOutput("Proj4string"),
+      # uiOutput("Proj4string"),
       
       uiOutput("Output_name"),
       
@@ -644,15 +644,15 @@ server <- function(input, output){
         
       }
       
-      if(input$which == "Project raster"){
-        
-        # Load data
-        project_raster <- raster(input$generic_raster$datapath)
-        
-        # Project the raster
-        result <- projectRaster(project_raster, crs = CRS(input$proj4string))
-        
-      }
+      # if(input$which == "Project raster"){
+      #   
+      #   # Load data
+      #   project_raster <- raster(input$generic_raster$datapath)
+      #   
+      #   # Project the raster
+      #   result <- projectRaster(project_raster, crs = CRS(input$proj4string))
+      #   
+      # }
       
       if(input$which == "Project shapefile"){
 
