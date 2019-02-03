@@ -3,7 +3,6 @@
 library(rgdal)
 library(shiny)
 library(dplyr)
-library(tidyr)
 library(raster)
 library(zip)
 library(sp)
@@ -340,7 +339,6 @@ server <- function(input, output){
         }
       }
       suit <- colSums(j_mat)
-      rm(j_mat)
       names(suit) <- seq(0, 100, 25)
       
       # Take expectation as prediction
@@ -352,6 +350,7 @@ server <- function(input, output){
     # Derive ID column
     suit_ras_df_dn$Suitability <- st
     suit_ras_df_dn$Suitability_SD <- st_sd
+    rm(st, st_sd)
     
     # Join back to full dataset
     s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = names(suit_ras_df))
@@ -363,7 +362,7 @@ server <- function(input, output){
     suit_ras$Suitability_SD <- s_result$Suitability_SD
     suit_ras <- dropLayer(suit_ras, 1)
     
-    rm(s_result, st, st_sd)
+    rm(s_result)
     
     suit_ras
     
@@ -382,9 +381,7 @@ server <- function(input, output){
     
     filename = "Raster_Exports.zip",
     content = function(file){
-      
       # Define this function -- we need it here
-      
       efficiently_write_raster <- function(r, fn, ...){
         # Find good chunk characteristics for writing to disk
         tr <- blockSize(r)
