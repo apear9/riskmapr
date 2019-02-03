@@ -19,7 +19,19 @@ ui <- fluidPage(
       selectInput(
         inputId = "which",
         label = "Select the geoprocessing workflow you need:",
-        choices = c("None", "Project shapefile", "Project raster", "Crop to extent", "Propagule supply", "Anemochory", "Zoochory", "Agochory", "Hydrochory", "Stream edge to raster", "Recode stream raster"), 
+        choices = c(
+          "None", 
+          "Project shapefile", 
+          #"Project raster", 
+          "Crop to extent", 
+          "Propagule supply", 
+          "Anemochory", 
+          "Zoochory", 
+          "Agochory", 
+          "Hydrochory", 
+          "Stream edge to raster"#, 
+          #"Recode stream raster"
+          ), 
         selected = "None", 
         multiple = FALSE
       ),
@@ -369,7 +381,7 @@ server <- function(input, output){
   
   output$Generic_raster <- renderUI(
     {
-      if(input$which %in% c("Crop to extent", "Project raster")){
+      if(input$which %in% c("Crop to extent", "Project raster", "Project shapefile")){
         fileInput("generic_raster", "Upload a raster (.tif extension)", FALSE, ".tif")
       }
     }
@@ -383,13 +395,13 @@ server <- function(input, output){
     }
   )
   
-  output$Proj4string <- renderUI(
-    {
-      if(input$which %in% c("Project shapefile", "Project raster")){
-        textInput("proj4string", "Enter a proj4string (see spatialreference.org for proj4strings):", "+init=epsg:4326")
-      }
-    }
-  )
+  # output$Proj4string <- renderUI(
+  #   {
+  #     if(input$which %in% c("Project shapefile", "Project raster")){
+  #       textInput("proj4string", "Enter a proj4string (see spatialreference.org for proj4strings):", "+init=epsg:4326")
+  #     }
+  #   }
+  # )
   
   output$Reference_raster <- renderUI(
     {
@@ -651,9 +663,12 @@ server <- function(input, output){
           file.rename(files[i], files_renamed[i])
         }
         project_shapefile <- shapefile(files_renamed[grep(".shp$", files_renamed)])
+        
+        # Ingest raster with target coordinate reference system
+        project_raster <- raster(input$generic_raster$datapath)
 
         # Project it
-        result <- spTransform(project_shapefile, CRS(input$proj4string))
+        result <- spTransform(project_shapefile, crs(project_raster))
 
       }
       
