@@ -3,7 +3,6 @@
 library(rgdal)
 library(shiny)
 library(dplyr)
-library(tidyr)
 library(raster)
 library(zip)
 library(sp)
@@ -30,82 +29,81 @@ ui <- fluidPage(
       
       fileInput(
         "establishment", 
-        "Spatial proxies for establishment:",
+        "Spatial proxies for risk factors (establishment):",
         multiple = TRUE,
         accept = c(".tif")
       ),
       
-      helpText("Click on 'Browse...'. A new window should pop up, where you can select some raster files (with a .tif extension) to upload. Select these files and click 'Open'. Note that, if multiple files are selected, the files will be uploaded in alphabetical order by filename."),
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for total upload sizes <20MB."),
       
       textInput(
         "establishment_weights",
-        "Choose weights for establishment proxies:",
-        "Enter values separated by commas or other common separators"
+        "Risk factor weights (establishment)"
       ),
       
-      helpText("Delete the text currently in the text input field, and replace it with a set of numbers from 1 to 3, separated by commas. These should correspond to the alphabetically ordered rasters you uploaded in the field above."),
+      helpText("Enter weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
       
       numericInput(
         "est_sd", 
-        "Standard deviation for the establishment node:",
+        "Standard deviation (establishment)",
         value = 15,
         min = 0.1,
         max = 1000
       ),
       
-      helpText("You can change the number above to any value between, and including, 0.1 and 1000. Don't change anything if you want to accept the default value of 15."),
-      
-      hr(),
+      helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
       
       fileInput(
         "persistence", 
-        "Spatial proxies for persistence:",
+        "Spatial proxies for risk factors (persistence)",
         multiple = TRUE,
         accept = c(".tif")
       ),
       
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. For details, see above."),
+      
       textInput(
         "persistence_weights",
-        "Choose weights for persistence proxies:",
-        "Enter values separated by commas or other common separators"
+        "Risk factor weights (persistence)"
       ),
+      
+      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above"),
       
       numericInput(
         "per_sd", 
-        "Standard deviation for the persistence node:",
+        "Standard deviation (persistence)",
         value = 15,
         min = 0.1,
         max = 1000
       ),
       
-      hr(),
+      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
       
       fileInput(
         "propagule_pressure", 
-        "Spatial proxies for propagule pressure:",
+        "Spatial proxies for risk factors (propagule pressure)",
         multiple = TRUE,
         accept = c(".tif")
       ),
       
       textInput(
         "propagule_weights",
-        "Choose weights for propagule pressure proxies:",
-        "Enter values separated by commas or other common separators"
+        "Risk factor weights (propagule pressure)"
       ),
       
       numericInput(
         "prg_sd", 
-        "Standard deviation for the propagule pressure node:",
+        "Standard deviation (propagule pressure)",
         value = 15,
         min = 0.1,
         max = 1000
       ),
       
-      hr(),
+      
       
       numericInput(
         "suitability_sd", 
-        "Standard deviation for the suitability node:",
+        "Standard deviation (suitability)",
         value = 10,
         min = 0.1,
         max = 1000
@@ -113,13 +111,13 @@ ui <- fluidPage(
       
       numericInput(
         "susceptibility_sd", 
-        "Standard deviation for the susceptiblity node:",
+        "Standard deviation (susceptiblity)",
         value = 10,
         min = 0.1,
         max = 1000
       ),
       
-      hr(),
+      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence and susceptibility as a function of suitability and propagule pressure. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
       
       textInput(
         "suit_name",
@@ -133,9 +131,7 @@ ui <- fluidPage(
         "Susceptibility"
       ),
       
-      helpText("You can choose the names of the downloadable files produced by this app by replacing the values in the two fields above with your own text."),
-      
-      hr(),
+      helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."), 
       
       actionButton("validate", "Click to view network model (validate)"),
       
@@ -145,9 +141,9 @@ ui <- fluidPage(
       
       helpText("Clicking on the button above will cause the app to compute the invasion risk maps for your study area. Once this is finished, you will see a plot of the study area appear to the right."),
       
-      downloadButton(outputId = "downloadData", label = "DOWNLOAD OUTPUTS"),
+      downloadButton(outputId = "downloadData", label = "Download risk map"),
       
-      helpText("Click on the above button to download a zip folder containing the spatial risk maps and uncertainty maps. This will only work if you can see the plot of the study area to the right.")
+      helpText("Once the risk maps have been generated and displayed, click to download a .ZIP folder with model outputs (suitability and susceptibility index maps + uncertainty maps).")
       
     ),
     
@@ -358,40 +354,28 @@ server <- function(input, output){
     i_prg <- (nn_per + nn_est + 1):(nn_per + nn_est + nn_pgl)
     
     ## Read in rasters as stack
-    drop_ind <- 1:(length(c(persistence, establishment, propagule)) - 1)
     suit_ras <- stack(c(persistence, establishment, propagule))
     suit_ras_df <- as.data.frame(suit_ras)
-    suit_ras <- dropLayer(suit_ras, drop_ind)
+    rm(suit_ras)
     
     ## Extract distinct rows WITHOUT rows involving NAs.
-    # suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
     suit_ras_df_dn <- distinct(suit_ras_df)
-    # suit_ras_df_dn <- suit_ras_df_dn[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
     suit_ras_df_dn <- na.omit(suit_ras_df_dn)
-    # suit_ras_df_dn <- suit_ras_df_dn[apply(
-    #   suit_ras_df_dn, 
-    #   1, 
-    #   function(x) !(any(x > 100) | any(x < 0))), ]
     suit_ras_df_dn <- filter_all(suit_ras_df_dn, all_vars(. >= 0 & . <= 100))
     
     # Subsets as required for the analysis
-    # per_cols <- as.matrix(suit_ras_df_dn[, i_per])
     per_wets <- persistence_wts 
-    # est_cols <- as.matrix(suit_ras_df_dn[, i_est])
     est_wets <- establishment_wts 
-    # prg_cols <- as.matrix(suit_ras_df_dn[, i_prg])
     prg_wets <- propagule_wts
     
     ## Compute distribution of suitability 
     
     # Empty numeric vectors
     st <- st_sd <- sc <- sc_sd <- numeric(nrow(suit_ras_df_dn))
-    
     # Main loop
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
-      # est_vars <- est_cols[i, ]
       est_vars <- suit_ras_df_dn[i, i_est]
       est_mean <- sum(est_vars * est_wets)/sum(est_wets)
       est <- dtruncnorm(seq(0, 100, 25), 0, 100, est_mean, establishment_sd)
@@ -399,7 +383,6 @@ server <- function(input, output){
       names(est) <- seq(0, 100, 25)
       
       # Persistence
-      # per_vars <- per_cols[i, ]
       per_vars <- suit_ras_df_dn[i, i_per]
       per_mean <- sum(per_vars * per_wets)/sum(per_wets)
       per <- dtruncnorm(seq(0, 100, 25), 0, 100, per_mean, persistence_sd)
@@ -460,26 +443,30 @@ server <- function(input, output){
     
     # Derive ID column
     # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
-    suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
+    # suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
     suit_ras_df_dn$Suitability <- st
     suit_ras_df_dn$Suitability_SD <- st_sd
     suit_ras_df_dn$Susceptibility <- sc
     suit_ras_df_dn$Susceptibility_SD <- sc_sd
     
+    rm(st, st_sd, sc, sc_sd)
+    
     # Join back to full dataset
     # suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
-    suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
-    s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = "id")
+    # suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
+    s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = names(suit_ras_df))
     
     rm(suit_ras_df, suit_ras_df_dn)
     
     ### Put back into raster
+    suit_ras <- stack(establishment[1])
     suit_ras$Suitability <- s_result$Suitability
     suit_ras$Suitability_SD <- s_result$Suitability_SD
     suit_ras$Susceptibility <- s_result$Susceptibility
     suit_ras$Susceptibility_SD <- s_result$Susceptibility_SD
+    suit_ras <- dropLayer(suit_ras, 1)
     
-    rm(s_result, st, st_sd, sc, sc_sd)
+    rm(s_result)
     
     suit_ras
     
@@ -498,7 +485,20 @@ server <- function(input, output){
     
     filename = "Raster_Exports.zip",
     content = function(file){
-      the_stack <- stack(the_plots())
+      # Define this function -- we need it here
+      efficiently_write_raster <- function(r, fn, ...){
+        # Find good chunk characteristics for writing to disk
+        tr <- blockSize(r)
+        # Function to write out the raster WITHOUT copying it several times in memory
+        f <- writeStart(r, fn, ...)
+        for(i in 1:tr$n){
+          vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
+          f <- writeValues(f, vals, tr$row[i])
+        }
+        f <- writeStop(f)
+        return(f)
+      }
+      # Remove any existing tif files and write out the new ones
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
@@ -506,10 +506,10 @@ server <- function(input, output){
       suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
       susc_fn <- paste0(input$susc_name, ".tif")
       susc_sd_fn <- paste0(input$susc_name, "_SD.tif")
-      writeRaster(the_stack$Suitability, suit_fn)
-      writeRaster(the_stack$Susceptibility, susc_fn)
-      writeRaster(the_stack$Suitability_SD, suit_sd_fn)
-      writeRaster(the_stack$Susceptibility_SD, susc_sd_fn)
+      efficiently_write_raster(the_plots()$Suitability, suit_fn)
+      efficiently_write_raster(the_plots()$Susceptibility, susc_fn)
+      efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn)
+      efficiently_write_raster(the_plots()$Susceptibility_SD, susc_sd_fn)
       zip(zipfile = file, files = Sys.glob("*.tif"))
     },
     contentType = "application/zip"
