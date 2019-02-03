@@ -416,6 +416,25 @@ server <- function(input, output){
     
     filename = "Raster_Exports.zip",
     content = function(file){
+      
+      # Define this function -- we need it here
+      
+      efficiently_write_raster <- function(r, fn, ...){
+        
+        # Find good chunk characteristics for writing to disk
+        tr <- blockSize(r)
+        
+        # Function to write out the raster WITHOUT copying it several times in memory
+        f <- writeStart(r, fn, ...)
+        for(i in 1:tr$n){
+          vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
+          f <- writeValues(f, vals, tr$row[i])
+        }
+        f <- writeStop(f)
+        
+        return(f)
+        
+      }
       # the_stack <- stack(the_plots())
       print("Downloading")
       print(pryr::mem_used())
@@ -425,9 +444,8 @@ server <- function(input, output){
       suit_fn <- paste0(input$suit_name, ".tif")
       suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
       print("Going wrong before writing")
-      # writeRaster(the_plots()$Suitability, suit_fn)
-      # writeRaster(the_plots()$Suitability_SD, suit_sd_fn)
-      writeRaster(the_plots(), c(suit_fn, suit_sd_fn), bylayer = TRUE)
+      efficiently_write_raster(the_plots()$Suitability, suit_fn, overwrite = TRUE)
+      efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn, overwrite = TRUE)
       print("Going wrong after writing")
       zip(zipfile = file, files = Sys.glob("*.tif"))
     },
