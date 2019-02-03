@@ -35,7 +35,7 @@ ui <- fluidPage(
         accept = c(".tif")
       ),
       
-      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for <20MB."),
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for total upload sizes <20MB."),
       
       textInput(
         "establishment_weights",
@@ -61,14 +61,14 @@ ui <- fluidPage(
         accept = c(".tif")
       ),
       
-      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. Details see above."),
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. For details, see above."),
       
       textInput(
         "persistence_weights",
         "Risk factor weights (persistence)"
       ),
       
-      helpText("Enter the weights for all identified risk factors affecting plant persistence. Details see above"),
+      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above"),
       
       numericInput(
         "per_sd", 
@@ -78,7 +78,7 @@ ui <- fluidPage(
         max = 1000
       ),
       
-      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. Details see above."),
+      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
 
       numericInput(
         "suitability_sd", 
@@ -97,8 +97,6 @@ ui <- fluidPage(
       actionButton("submit", "Run risk model"),
       
       helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
-      
-      hr(),
       
       textInput(
         "suit_name",
@@ -125,8 +123,6 @@ ui <- fluidPage(
 
 
 server <- function(input, output){
-  
-  print(pryr::mem_used())
   
   the_graph <- eventReactive(input$validate, {
     
@@ -238,7 +234,7 @@ server <- function(input, output){
   )
   
   the_plots <- eventReactive(input$submit, {
-    print(pryr::mem_used())
+    
     ### Define functions for finding expectations and standard deviations
     exp_discrete <- function(x){
       p <- x
@@ -252,7 +248,7 @@ server <- function(input, output){
     }
     std_discrete <- function(x){
       sqrt(ex2_discrete(x) - exp_discrete(x)^2)
-    }
+    } # Standard definitions for discrete random variables
     
     ### Get inputs
     req(input$persistence)
@@ -276,7 +272,7 @@ server <- function(input, output){
     
     ## Standard deviations of suitability and susceptibility nodes
     suitability_sd <- input$suitability_sd
-    print(pryr::mem_used())
+    
     ## Find length of names
     nn_per <- length(persistence)
     nn_est <- length(establishment)
@@ -293,42 +289,29 @@ server <- function(input, output){
     ## Construct indices, persistence first
     i_per <- 1:nn_per
     i_est <- (nn_per + 1):(nn_per + nn_est)
-    print(pryr::mem_used())
+    
     ## Read in rasters as stack
-    # drop_ind <- 1:(length(c(persistence, establishment)) - 1)
     suit_ras <- stack(c(persistence, establishment))
     suit_ras_df <- as.data.frame(suit_ras)
-    # suit_ras <- dropLayer(suit_ras, drop_ind)
     rm(suit_ras)
-    print(pryr::mem_used())
+    
     ## Extract distinct rows WITHOUT rows involving NAs.
-    #suit_ras_df_dn <- suit_ras_df[!duplicated(suit_ras_df), ]
     suit_ras_df_dn <- distinct(suit_ras_df)
-    # suit_ras_df_dn <- na.omit(suit_ras_df_dn)[apply(suit_ras_df_dn, 1, function(x) !any(is.na(x))), ]
     suit_ras_df_dn <- na.omit(suit_ras_df_dn)
-    # suit_ras_df_dn <- suit_ras_df_dn[apply(
-    #   suit_ras_df_dn, 
-    #   1, 
-    #   function(x) !(any(x > 100) | any(x < 0))), ]
     suit_ras_df_dn <- filter_all(suit_ras_df_dn, all_vars(. >= 0 & . <= 100))
-    print(pryr::mem_used())
+    
     # Subsets as required for the analysis
-    # per_cols <- as.matrix(suit_ras_df_dn[, i_per])
     per_wets <- persistence_wts 
-    # est_cols <- as.matrix(suit_ras_df_dn[, i_est])
     est_wets <- establishment_wts 
     
     ## Compute distribution of suitability 
     
     # Empty numeric vectors
     st <- st_sd <- numeric(nrow(suit_ras_df_dn))
-    print(pryr::mem_used())
-    print("Starting main loop")
     # Main loop
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
-      # est_vars <- est_cols[i, ]
       est_vars <- suit_ras_df_dn[i, i_est]
       est_mean <- sum(est_vars * est_wets)/sum(est_wets)
       est <- dtruncnorm(seq(0, 100, 25), 0, 100, est_mean, establishment_sd)
@@ -336,7 +319,6 @@ server <- function(input, output){
       names(est) <- seq(0, 100, 25)
       
       # Persistence
-      # per_vars <- per_cols[i, ]
       per_vars <- suit_ras_df_dn[i, i_per]
       per_mean <- sum(per_vars * per_wets)/sum(per_wets)
       per <- dtruncnorm(seq(0, 100, 25), 0, 100, per_mean, persistence_sd)
@@ -360,40 +342,27 @@ server <- function(input, output){
       suit <- colSums(j_mat)
       rm(j_mat)
       names(suit) <- seq(0, 100, 25)
-      # suit_wets <- sum(est_wets) + sum(per_wets)
       
       # Take expectation as prediction
       st[i] <- exp_discrete(suit)
       st_sd[i] <- std_discrete(suit)
       
     }
-    print(pryr::mem_used())
-    print("Ended main loop")
+    
     # Derive ID column
-    # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
-    # suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
     suit_ras_df_dn$Suitability <- st
     suit_ras_df_dn$Suitability_SD <- st_sd
-    print(pryr::mem_used())
+    
     # Join back to full dataset
-    # print("Uniting")
-    # suit_ras_df <- data.frame(id = apply(suit_ras_df, 1, function(x) paste(x, collapse = "")))
-    # suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
-    # print("Unite is not the problem")
-    # s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = "id")
-    print("Attempting to join")
     s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = names(suit_ras_df))
-    print("Join was not a problem")
-    print(pryr::mem_used())
     rm(suit_ras_df, suit_ras_df_dn)
-    print("Joined and removed data.frame objects")
-    print(pryr::mem_used())
+    
     ### Put back into raster
     suit_ras <- stack(establishment[1])
     suit_ras$Suitability <- s_result$Suitability
     suit_ras$Suitability_SD <- s_result$Suitability_SD
     suit_ras <- dropLayer(suit_ras, 1)
-    print(pryr::mem_used())
+    
     rm(s_result, st, st_sd)
     
     suit_ras
@@ -404,10 +373,7 @@ server <- function(input, output){
     {
       
       ### Plot
-      # print(pryr::mem_used())
-      # print("Plotting")
       spplot(the_plots(), "Suitability")
-      # plot(the_plots()$Suitability)
       
     }
   )
@@ -420,10 +386,8 @@ server <- function(input, output){
       # Define this function -- we need it here
       
       efficiently_write_raster <- function(r, fn, ...){
-        
         # Find good chunk characteristics for writing to disk
         tr <- blockSize(r)
-        
         # Function to write out the raster WITHOUT copying it several times in memory
         f <- writeStart(r, fn, ...)
         for(i in 1:tr$n){
@@ -431,22 +395,16 @@ server <- function(input, output){
           f <- writeValues(f, vals, tr$row[i])
         }
         f <- writeStop(f)
-        
         return(f)
-        
       }
-      # the_stack <- stack(the_plots())
-      print("Downloading")
-      print(pryr::mem_used())
+      # Now begin writing
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
       suit_fn <- paste0(input$suit_name, ".tif")
       suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
-      print("Going wrong before writing")
       efficiently_write_raster(the_plots()$Suitability, suit_fn, overwrite = TRUE)
       efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn, overwrite = TRUE)
-      print("Going wrong after writing")
       zip(zipfile = file, files = Sys.glob("*.tif"))
     },
     contentType = "application/zip"
