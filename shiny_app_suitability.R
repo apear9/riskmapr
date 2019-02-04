@@ -255,15 +255,25 @@ server <- function(input, output){
     req(input$establishment)
     req(input$establishment_weights)
     
+    ### Some preprocessing to force the files to be loaded in alphanumeric order
+    per_an <- input$persistence
+    per_an <- per_an$name
+    per_an <- gsub(".tif", "", per_an) # Not that it really matters...
+    est_an <- input$establishment
+    est_an <- est_an$name
+    est_an <- gsub(".tif", "", est_an)
+    per_or <- order(per_an)
+    est_or <- order(est_an)
+    
     ### Get persistence and establishment as rasters
     persistence <- input$persistence
-    persistence <- persistence$datapath
+    persistence <- persistence$datapath[per_or]
     persistence_wts <- input$persistence_weights
     persistence_wts <- str_split(persistence_wts, "[,/;\t]{1}")[[1]]
     persistence_wts <- as.numeric(persistence_wts)
     persistence_sd <- input$per_sd
     establishment <- input$establishment
-    establishment <- establishment$datapath
+    establishment <- establishment$datapath[est_or]
     establishment_wts <- input$establishment_weights
     establishment_wts <- str_split(establishment_wts, "[,/;\t]{1}")[[1]]
     establishment_wts <- as.numeric(establishment_wts)
@@ -307,6 +317,7 @@ server <- function(input, output){
     
     # Empty numeric vectors
     st <- st_sd <- numeric(nrow(suit_ras_df_dn))
+    
     # Main loop
     for(i in 1:nrow(suit_ras_df_dn)){
       
