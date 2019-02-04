@@ -67,7 +67,7 @@ ui <- fluidPage(
         "Risk factor weights (persistence)"
       ),
       
-      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above"),
+      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above."),
       
       numericInput(
         "per_sd", 
@@ -89,11 +89,11 @@ ui <- fluidPage(
       
       helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
       
-      actionButton("validate", "Visualize risk model"),
+      actionButton("validate", "VISUALIZE RISK MODEL"),
       
-      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies and risk factor weights (colour-coded network links)."),
+      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
       
-      actionButton("submit", "Run risk model"),
+      actionButton("submit", "RUN RISK MODEL"),
       
       helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
       
@@ -105,7 +105,7 @@ ui <- fluidPage(
       
       helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."),
       
-      downloadButton(outputId = "downloadData", label = "Download risk map"),
+      downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
       
       helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
       

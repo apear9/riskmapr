@@ -17,7 +17,7 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Bayesian network for invasion suitability and susceptibility"),
+  titlePanel("Rapid riskmapr - susceptibility to weed invasion"),
   
   # Sidebar panel for inputs ----
   
@@ -67,7 +67,7 @@ ui <- fluidPage(
         "Risk factor weights (persistence)"
       ),
       
-      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above"),
+      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above."),
       
       numericInput(
         "per_sd", 
@@ -86,10 +86,14 @@ ui <- fluidPage(
         accept = c(".tif")
       ),
       
+      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant propagule pressure. For details, see above."),
+      
       textInput(
         "propagule_weights",
         "Risk factor weights (propagule pressure)"
       ),
+      
+      helpText("Enter the weights for all identified risk factors affecting plant propagule pressure. For details, see above."),
       
       numericInput(
         "prg_sd", 
@@ -99,8 +103,8 @@ ui <- fluidPage(
         max = 1000
       ),
       
-      
-      
+      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
+ 
       numericInput(
         "suitability_sd", 
         "Standard deviation (suitability)",
@@ -108,6 +112,8 @@ ui <- fluidPage(
         min = 0.1,
         max = 1000
       ),
+
+      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
       
       numericInput(
         "susceptibility_sd", 
@@ -116,35 +122,35 @@ ui <- fluidPage(
         min = 0.1,
         max = 1000
       ),
+
+      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (susceptibility) as a function of suitability and propagule pressure. For details, see above."),
       
-      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence and susceptibility as a function of suitability and propagule pressure. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
+      actionButton("validate", "VISUALIZE RISK MODEL"),
       
+      helpText("Click to visualize and validate the structure of your risk model (susceptibility). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
+      
+      actionButton("submit", "RUN RISK MODEL"),
+      
+      helpText("Click to run your risk model (susceptibility). Four spatial files (.TIF) are generated: suitability and susceptibility index maps (the model expected values), and uncertainty maps for each (the model standard deviations) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
+
       textInput(
         "suit_name",
-        "Optional: enter file name for suitability raster, no file extension",
+        "Optional: name risk map (suitability)",
         "Suitability"
       ),
       
       textInput(
         "susc_name",
-        "Optional: enter file name for susceptibility raster, no file extension",
+        "Optional: name risk map (susceptibility)",
         "Susceptibility"
       ),
       
       helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."), 
-      
-      actionButton("validate", "Click to view network model (validate)"),
-      
-      helpText("Clicking on the button above will cause the app to display a graph of the Bayesian network you have constructed by uploading files and entering inputs. Use this to check that the structure of the network is fine."),
-      
-      actionButton("submit", "Click to produce risk maps (run program)"),
-      
-      helpText("Clicking on the button above will cause the app to compute the invasion risk maps for your study area. Once this is finished, you will see a plot of the study area appear to the right."),
-      
-      downloadButton(outputId = "downloadData", label = "Download risk map"),
+
+      downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
       
       helpText("Once the risk maps have been generated and displayed, click to download a .ZIP folder with model outputs (suitability and susceptibility index maps + uncertainty maps).")
-      
+
     ),
     
     mainPanel(
