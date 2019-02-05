@@ -12,9 +12,9 @@ ui <- fluidPage(
   
   # Sidebar panel for inputs ----
   
-  sidebarLayout(width = 6, 
+  sidebarLayout(
     
-    sidebarPanel(
+    sidebarPanel(width = 6, 
       
       selectInput(
         inputId = "which",
@@ -29,7 +29,7 @@ ui <- fluidPage(
           "Agochory", 
           "Zoochory", 
           "Anemochory"#, 
-          #"Stream edge to raster", # I don't want your work on this to be lost, but I think for the paper we best leave this functionality to the GIS pre-processing, maybe we can leave in package (if you still intend to bundle functions up as a package) but omit from shiny app?
+          #"Stream edge to raster", 
           #"Recode stream raster"
           ), 
         selected = "None", 
