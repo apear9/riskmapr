@@ -12,7 +12,7 @@ ui <- fluidPage(
   
   # Sidebar panel for inputs ----
   
-  sidebarLayout(
+  sidebarLayout(width = 6, 
     
     sidebarPanel(
       
@@ -36,13 +36,19 @@ ui <- fluidPage(
         multiple = FALSE
       ),
       
-      helpText("1. Project detection records: Use this tool to project weed detection records to the same coordinate system as the reference raster (optional, ideally this step has already been done during GIS pre-processing)."),
-      helpText("2. Crop raster files: Use this tool to crop the reference raster and spatial proxies for risk factors affecting plant establishment and persistence to the dispersal risk area around source infestations (required, to limit computational demands on the susceptbility model app)."),
-      helpText("3. Propagule supply: Use this tool to define abundance-based thresholds for propagule supply from source infestations within the dispersal risk area (required)."),
-      helpText("4a. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor)."),
-      helpText("4b. Dispersal by wind (anemochory): Use this tool to define distance-based thresholds for propagule dispersal via wind (optional, only if identified risk factor)."),
-      helpText("4c. Dispersal by water (hydrochory): Use this tool to define distance-based thresholds for propagule dispersal via water (optional, only if identified risk factor)."),
-      helpText("4d. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor)."),
+      uiOutput("helptext1"),
+      
+      uiOutput("helptext2"),
+      
+      uiOutput("helptext3"),
+      
+      uiOutput("helptext4a"),
+      
+      uiOutput("helptext4b"),
+      
+      uiOutput("helptext4c"),
+      
+      uiOutput("helptext4d"),
 
       uiOutput("Stream_raster"),
       
@@ -81,6 +87,7 @@ ui <- fluidPage(
     ),
     
     mainPanel(
+      width = 6,
       plotOutput("plot")
     )
   )
@@ -347,6 +354,62 @@ server <- function(input, output){
   }
   
   # This code updates the UI
+  output$helptext1 <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("1. Project detection records: Use this tool to project weed detection records to the same coordinate system as the reference raster (optional, ideally this step has already been done during GIS pre-processing).")
+       }
+    }
+  )
+  
+  output$helptext2 <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("2. Crop raster files: Use this tool to crop the reference raster and spatial proxies for risk factors affecting plant establishment and persistence to the dispersal risk area around source infestations (required, to limit computational demands on the susceptbility model app).")
+      }
+    }
+  )
+  
+  output$helptext3 <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("3. Propagule supply: Use this tool to define abundance-based thresholds for propagule supply from source infestations within the dispersal risk area (required).")
+      }
+    }
+  )
+  
+  output$helptext4a <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("4a. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor).")
+      }
+    }
+  )
+  
+  output$helptext4b <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("4b. Dispersal by wind (anemochory): Use this tool to define distance-based thresholds for propagule dispersal via wind (optional, only if identified risk factor).")
+      }
+    }
+  )
+  
+  output$helptext4c <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("4c. Dispersal by water (hydrochory): Use this tool to define distance-based thresholds for propagule dispersal via water (optional, only if identified risk factor).")
+      }
+    }
+  )
+  
+  output$helptext4d <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("4d. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor).")
+      }
+    }
+  )
+  
   output$Stream_raster <- renderUI(
     {
       if(input$which %in% c("Hydrochory", "Agochory", "Recode stream raster")){
