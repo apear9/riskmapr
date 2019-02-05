@@ -17,7 +17,7 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Rapid riskmapr - susceptibility to weed invasion"),
+  titlePanel("Rapid weed riskmapr (susceptibility model)"),
   
   # Sidebar panel for inputs ----
   

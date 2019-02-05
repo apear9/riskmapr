@@ -8,7 +8,7 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Tools for converting weed detection records into spatial risk proxies"),
+  titlePanel("Rapid weed riskmapr (susceptibility model) - geoprocessing tools"),
   
   # Sidebar panel for inputs ----
   
@@ -25,17 +25,25 @@ ui <- fluidPage(
           #"Project raster", 
           "Crop to extent", 
           "Propagule supply", 
-          "Anemochory", 
-          "Zoochory", 
-          "Agochory", 
           "Hydrochory", 
-          "Stream edge to raster"#, 
+          "Agochory", 
+          "Zoochory", 
+          "Anemochory"#, 
+          #"Stream edge to raster", # I don't want your work on this to be lost, but I think for the paper we best leave this functionality to the GIS pre-processing, maybe we can leave in package (if you still intend to bundle functions up as a package) but omit from shiny app?
           #"Recode stream raster"
           ), 
         selected = "None", 
         multiple = FALSE
       ),
       
+      helpText("1. Project detection records: Use this tool to project weed detection records to the same coordinate system as the reference raster (optional, ideally this step has already been done during GIS pre-processing)."),
+      helpText("2. Crop raster files: Use this tool to crop the reference raster and spatial proxies for risk factors affecting plant establishment and persistence to the dispersal risk area around source infestations (required, to limit computational demands on the susceptbility model app)."),
+      helpText("3. Propagule supply: Use this tool to define abundance-based thresholds for propagule supply from source infestations within the dispersal risk area (required)."),
+      helpText("4a. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor)."),
+      helpText("4b. Dispersal by wind (anemochory): Use this tool to define distance-based thresholds for propagule dispersal via wind (optional, only if identified risk factor)."),
+      helpText("4c. Dispersal by water (hydrochory): Use this tool to define distance-based thresholds for propagule dispersal via water (optional, only if identified risk factor)."),
+      helpText("4d. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor)."),
+
       uiOutput("Stream_raster"),
       
       uiOutput("Stream_value"),
