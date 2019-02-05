@@ -47,7 +47,7 @@ ui <- fluidPage(
         "Standard deviation (establishment)",
         value = 15,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
       
       helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
@@ -73,7 +73,7 @@ ui <- fluidPage(
         "Standard deviation (persistence)",
         value = 15,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
       
       helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
@@ -252,7 +252,7 @@ server <- function(input, output){
     unique_out_of_memory <- function(x){
       nl <- nlayers(x)
       un <- list(length = nl, mode = "list")
-      tr <- blockSize(x, n = nl, minblocks = nl * 5)
+      tr <- blockSize(x, n = nl, minblocks = nl * 10)
       un <- NULL
       print(tr)
       for (i in 1:tr$n) {
@@ -389,7 +389,7 @@ server <- function(input, output){
     ncolumn <- ncol(suit_ras) # We will need this later
     
     # Begin the process of joining this back to the full dataset, all done by manipulating the files and without ingesting the entire raster into memory
-    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = 20)
+    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 10)
     
     print("Assigning result vectors")
     print(pryr::mem_used())
@@ -405,7 +405,7 @@ server <- function(input, output){
     for(i in 1:chunk_info$n){
       
       tmp_vec <- getValues(suit_ras, row = chunk_info$row[i], nrows = chunk_info$nrows[i])
-      tmp_vec <- apply(tmp_vec, 1, paste0, collapse = "")
+      tmp_vec <- tidyr::unite(as.data.frame(tmp_vec), "id", sep = "", remove = TRUE)
       val_ve1 <- rep(NA, length(tmp_vec))
       val_ve2 <- rep(NA, length(tmp_vec))
       for(j in 1:nrow(suit_ras_df_dn)){
@@ -415,6 +415,7 @@ server <- function(input, output){
       suit_vals[current_position:(current_position - 1 + ncolumn * chunk_info$nrows[i])] <- val_ve1
       suit_sd_vals[current_position:(current_position - 1 + ncolumn * chunk_info$nrows[i])] <- val_ve2
       current_position <- current_position + chunk_info$nrows[i] * ncolumn
+      print(pryr::mem_used())
     }
     rm(tmp_vec, val_ve1, val_ve2, current_position)
     
