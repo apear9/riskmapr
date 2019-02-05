@@ -23,7 +23,7 @@ ui <- fluidPage(
   
   sidebarLayout(
     
-    sidebarPanel(
+    sidebarPanel(width = 6,
       
       # Input: Select a file ----
       
@@ -48,7 +48,7 @@ ui <- fluidPage(
         "Standard deviation (establishment)",
         value = 15,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
       
       helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
@@ -74,7 +74,7 @@ ui <- fluidPage(
         "Standard deviation (persistence)",
         value = 15,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
       
       helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
@@ -100,7 +100,7 @@ ui <- fluidPage(
         "Standard deviation (propagule pressure)",
         value = 15,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
       
       helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
@@ -110,7 +110,7 @@ ui <- fluidPage(
         "Standard deviation (suitability)",
         value = 10,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
 
       helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
@@ -120,7 +120,7 @@ ui <- fluidPage(
         "Standard deviation (susceptiblity)",
         value = 10,
         min = 0.1,
-        max = 1000
+        max = 100
       ),
 
       helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (susceptibility) as a function of suitability and propagule pressure. For details, see above."),
@@ -153,7 +153,7 @@ ui <- fluidPage(
 
     ),
     
-    mainPanel(
+    mainPanel(width = 6,
       visNetworkOutput("valiplot"),
       plotOutput("mainplot")
     )
