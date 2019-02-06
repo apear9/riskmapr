@@ -463,7 +463,7 @@ server <- function(input, output){
   output$Crop_generic_raster <- renderUI(
     {
       if(input$which == "Crop to extent"){
-        fileInput("crop_generic_raster", "Upload a raster (.tif extension)", TRUE, ".tif")
+        fileInput("crop_generic_raster", "Upload rasters (.tif extension, allows multiple)", TRUE, ".tif")
       }
     }
   )
