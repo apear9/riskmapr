@@ -336,7 +336,7 @@ server <- function(input, output){
     upper <- max(c(b1, b2))
     
     # Return logical for comparison
-    lower <= v & v <= upper
+    lower <= v & v < upper # [LWR, UPR)
     
   }
   
