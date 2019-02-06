@@ -94,7 +94,7 @@ ui <- fluidPage(
         "Suitability"
       ),
       
-      helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."),
+      helpText("Choose a descriptive name for the generated risk map (no file extension). Please choose the file name before running the tool."),
       
       actionButton("validate", "VISUALIZE RISK MODEL"),
       
