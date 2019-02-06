@@ -666,7 +666,6 @@ server <- function(input, output){
           file.rename(files[i], files_renamed[i])
         }
         detections <- shapefile(files_renamed[grep(".shp$", files_renamed)])
-        #  distance_thresholds, proxy_levels
         
         # Ingest reference raster
         reference_raster <- input$reference_raster
@@ -768,8 +767,10 @@ server <- function(input, output){
     
     filename = function(){
       if(!(input$which %in% c("Project detection records", "Crop to extent"))){
+        # Single raster outputs will be available as .tif
         paste0(input$output_name, ".tif")
       } else {
+        # Bundles of (potentially) multiple files will be downloadable as a .zip archive
         paste0(input$output_name, ".zip")
       }
       
