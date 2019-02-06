@@ -765,11 +765,23 @@ server <- function(input, output){
       
     },
     content = function(file){
+      efficiently_write_raster <- function(r, fn, ...){
+        # Find good chunk characteristics for writing to disk
+        tr <- blockSize(r)
+        # Function to write out the raster WITHOUT copying it several times in memory
+        f <- writeStart(r, fn, ...)
+        for(i in 1:tr$n){
+          vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
+          f <- writeValues(f, vals, tr$row[i])
+        }
+        f <- writeStop(f)
+        return(f)
+      }
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
       if(input$which != "Project detection records"){
-        writeRaster(the_data(), file)
+        efficiently_write_raster(the_data(), file)
       } else {
         shapefile(the_data(), paste0(input$output_name, ".shp"), overwrite = TRUE)
         zip(zipfile = file, files = Sys.glob(paste0("*", input$output_name, ".*")))
