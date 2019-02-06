@@ -22,7 +22,7 @@ ui <- fluidPage(
   
   sidebarLayout(
     
-    sidebarPanel(
+    sidebarPanel(width = 6,
       
       # Input: Select a file ----
       
@@ -88,14 +88,6 @@ ui <- fluidPage(
       
       helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
       
-      actionButton("validate", "VISUALIZE RISK MODEL"),
-      
-      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
-      
-      actionButton("submit", "RUN RISK MODEL"),
-      
-      helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
-      
       textInput(
         "suit_name",
         "Optional: name risk map (suitability)",
@@ -104,13 +96,21 @@ ui <- fluidPage(
       
       helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."),
       
+      actionButton("validate", "VISUALIZE RISK MODEL"),
+      
+      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
+      
+      actionButton("submit", "RUN RISK MODEL"),
+      
+      helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
+      
       downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
       
       helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
       
     ),
     
-    mainPanel(
+    mainPanel(width = 6, 
       visNetworkOutput("valiplot"),
       plotOutput("mainplot")
     )
@@ -323,6 +323,7 @@ server <- function(input, output){
     print("Finding unique")
     print(pryr::mem_used())
     suit_ras_df_dn <- unique_out_of_memory(suit_ras) # ... takes a while, but worth it.
+    suit_ras_df_dn <- dplyr::distinct(suit_ras_df_dn)
     
     # Remove any rows with NAs or values outside the 0, 100 range
     print("removing NAs")
@@ -332,6 +333,7 @@ server <- function(input, output){
     ind_rn <- rowSums(suit_ras_df_dn < 0 | suit_ras_df_dn > 100) == 0
     suit_ras_df_dn <- suit_ras_df_dn[ind_rn, ]
     rm(ind_rn, ind_na)
+    gc()
       
     # Subsets as required for the analysis
     per_wets <- persistence_wts 
@@ -385,48 +387,56 @@ server <- function(input, output){
     }
     
     # Derive ID column
-    ind_vec <- apply(suit_ras_df_dn, 1, paste0, collapse = "")
-    ncolumn <- ncol(suit_ras) # We will need this later
+    suit_ras_df_dn <- as.data.frame(suit_ras_df_dn)
+    suit_ras_df_dn$Suitability <- st 
+    rm(st)
+    suit_ras_df_dn$Suitability_SD <- st_sd
+    rm(st_sd)
+    gc()
+    
+    # ncolumn <- ncol(suit_ras) # We will need this later
     
     # Begin the process of joining this back to the full dataset, all done by manipulating the files and without ingesting the entire raster into memory
-    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 10)
-    
-    print("Assigning result vectors")
+    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 20)
     print(pryr::mem_used())
-    # Set aside memory for the join
-    suit_vals <- suit_sd_vals <- numeric(ncell(suit_ras))
     
-    # A loop counter
-    current_position <- 1
+    # Prepare to write by constructing file names
+    suit_fn <- paste0(input$suit_name, ".tif")
+    suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
     
-    # Then the loop, ingesting the raster by chunks
-    print("Chunk loop")
-    print(pryr::mem_used())
+    # Open file connections
+    f1 <- writeStart(suit_ras[[1]], suit_fn, overwrite = TRUE)
+    f2 <- writeStart(suit_ras[[1]], suit_sd_fn, overwrite = TRUE)
+    
+    # Then the loop, ingesting the raster by chunks, writing it by the same chunks
     for(i in 1:chunk_info$n){
-      
-      tmp_vec <- getValues(suit_ras, row = chunk_info$row[i], nrows = chunk_info$nrows[i])
-      tmp_vec <- tidyr::unite(as.data.frame(tmp_vec), "id", sep = "", remove = TRUE)
-      val_ve1 <- rep(NA, length(tmp_vec))
-      val_ve2 <- rep(NA, length(tmp_vec))
-      for(j in 1:nrow(suit_ras_df_dn)){
-        val_ve1[tmp_vec == ind_vec[j]] <- st[j]
-        val_ve2[tmp_vec == ind_vec[j]] <- st_sd[j] 
-      }
-      suit_vals[current_position:(current_position - 1 + ncolumn * chunk_info$nrows[i])] <- val_ve1
-      suit_sd_vals[current_position:(current_position - 1 + ncolumn * chunk_info$nrows[i])] <- val_ve2
-      current_position <- current_position + chunk_info$nrows[i] * ncolumn
+      print("1")
+      tmp_df <- as.data.frame(
+        getValues(suit_ras, row = chunk_info$row[i], nrows = chunk_info$nrows[i])
+      )
+      vals_df <- dplyr::left_join(
+        tmp_df, 
+        suit_ras_df_dn, 
+        by = names(tmp_df)
+      )
+      rm(tmp_df)
+      gc()
+      # vals_df <- vals_df[, c("Suitability", "Suitability_SD")]
+      print("2")
+      f1 <- writeValues(f1, vals_df$Suitability, chunk_info$row[i])
+      print("3")
+      f2 <- writeValues(f2, vals_df$Suitability_SD, chunk_info$row[i])
+      rm(vals_df)
+      gc()
       print(pryr::mem_used())
     }
-    rm(tmp_vec, val_ve1, val_ve2, current_position)
-    
-    print(pryr::mem_used())
+    f1 <- writeStop(f1)
+    f2 <- writeStop(f2)
+    rm(f1, f2)
+    gc()
     
     ### Put back into raster
-    suit_ras$Suitability <- suit_vals
-    rm(suit_vals)
-    suit_ras$Suitability_SD <- suit_sd_vals
-    rm(suit_sd_vals)
-    print(pryr::mem_used())
+    suit_ras <- raster(suit_fn)
     suit_ras
     
   })
@@ -445,27 +455,27 @@ server <- function(input, output){
     filename = "Raster_Exports.zip",
     content = function(file){
       # Define this function -- we need it here
-      efficiently_write_raster <- function(r, fn, ...){
-        # Find good chunk characteristics for writing to disk
-        tr <- blockSize(r)
-        # Function to write out the raster WITHOUT copying it several times in memory
-        f <- writeStart(r, fn, ...)
-        for(i in 1:tr$n){
-          vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
-          f <- writeValues(f, vals, tr$row[i])
-        }
-        f <- writeStop(f)
-        return(f)
-      }
+      # efficiently_write_raster <- function(r, fn, ...){
+      #   # Find good chunk characteristics for writing to disk
+      #   tr <- blockSize(r)
+      #   # Function to write out the raster WITHOUT copying it several times in memory
+      #   f <- writeStart(r, fn, ...)
+      #   for(i in 1:tr$n){
+      #     vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
+      #     f <- writeValues(f, vals, tr$row[i])
+      #   }
+      #   f <- writeStop(f)
+      #   return(f)
+      # }
       # Now begin writing
-      if(length(Sys.glob("*.tif")) > 0){
-        file.remove(Sys.glob("*.tif"))
-      }
-      suit_fn <- paste0(input$suit_name, ".tif")
-      suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
-      efficiently_write_raster(the_plots()$Suitability, suit_fn, overwrite = TRUE)
-      efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn, overwrite = TRUE)
-      zip(zipfile = file, files = Sys.glob("*.tif"))
+      # if(length(Sys.glob("*.tif")) > 0){
+      #   file.remove(Sys.glob("*.tif"))
+      # }
+      # suit_fn <- paste0(input$suit_name, ".tif")
+      # suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
+      # efficiently_write_raster(the_plots()$Suitability, suit_fn, overwrite = TRUE)
+      # efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn, overwrite = TRUE)
+      zip(zipfile = file, files = Sys.glob(paste0(input$suit_name, "*")))
     },
     contentType = "application/zip"
     
