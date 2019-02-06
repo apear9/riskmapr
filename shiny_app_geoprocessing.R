@@ -62,6 +62,8 @@ ui <- fluidPage(
       
       uiOutput("Generic_raster"),
       
+      uiOutput("Crop_generic_raster"),
+      
       uiOutput("Detections"),
       
       uiOutput("Reference_raster"),
@@ -452,8 +454,16 @@ server <- function(input, output){
   
   output$Generic_raster <- renderUI(
     {
-      if(input$which %in% c("Crop to extent", "Project raster", "Project detection records")){
+      if(input$which %in% c("Project raster", "Project detection records")){
         fileInput("generic_raster", "Upload a raster (.tif extension)", FALSE, ".tif")
+      }
+    }
+  )
+  
+  output$Crop_generic_raster <- renderUI(
+    {
+      if(input$which == "Crop to extent"){
+        fileInput("crop_generic_raster", "Upload a raster (.tif extension)", TRUE, ".tif")
       }
     }
   )
@@ -558,7 +568,7 @@ server <- function(input, output){
         detections <- shapefile(files_renamed[grep(".shp$", files_renamed)])
         
         # Ingest generic raster
-        generic_raster <- raster(input$generic_raster$datapath)
+        generic_raster <- stack(input$crop_generic_raster$datapath)
         
         # Max buffer distance
         max_radius <- input$max_radius
@@ -684,37 +694,37 @@ server <- function(input, output){
       
       }
       
-      if(input$which == "Stream edge to raster"){
-        
-        # Ingest shapefile
-        files <- input$stream_shapefile$datapath
-        files_renamed <- gsub("/[0-9]{1}\\.", "/REPLACE\\.", files)
-        for(i in 1:length(files)){
-          file.rename(files[i], files_renamed[i])
-        }
-        stream_shapefile <- shapefile(files_renamed[grep(".shp$", files_renamed)])
-        
-        # Ingest reference raster
-        reference_raster <- raster(input$reference_raster$datapath)
-        
-        # Mask over reference raster
-        reference_raster[] <- 1
-        result <- mask(reference_raster, stream_shapefile)
-        
-      }
+      # if(input$which == "Stream edge to raster"){
+      #   
+      #   # Ingest shapefile
+      #   files <- input$stream_shapefile$datapath
+      #   files_renamed <- gsub("/[0-9]{1}\\.", "/REPLACE\\.", files)
+      #   for(i in 1:length(files)){
+      #     file.rename(files[i], files_renamed[i])
+      #   }
+      #   stream_shapefile <- shapefile(files_renamed[grep(".shp$", files_renamed)])
+      #   
+      #   # Ingest reference raster
+      #   reference_raster <- raster(input$reference_raster$datapath)
+      #   
+      #   # Mask over reference raster
+      #   reference_raster[] <- 1
+      #   result <- mask(reference_raster, stream_shapefile)
+      #   
+      # }
       
-      if(input$which == "Recode stream raster"){
-        
-        # Ingest inputs
-        stream_raster <- input$stream_raster
-        stream_raster <- stream_raster$datapath
-        stream_raster <- raster(stream_raster)
-        stream_value <- input$stream_value
-        # Return recoded stream raster
-        result <- binary_stream_to_unary_stream(stream_raster, stream_value)
-        
-      }
-      
+      # if(input$which == "Recode stream raster"){
+      #   
+      #   # Ingest inputs
+      #   stream_raster <- input$stream_raster
+      #   stream_raster <- stream_raster$datapath
+      #   stream_raster <- raster(stream_raster)
+      #   stream_value <- input$stream_value
+      #   # Return recoded stream raster
+      #   result <- binary_stream_to_unary_stream(stream_raster, stream_value)
+      #   
+      # }
+      # 
       # if(input$which == "Project raster"){
       #   
       #   # Load data
@@ -757,7 +767,7 @@ server <- function(input, output){
   output$Download <- downloadHandler(
     
     filename = function(){
-      if(input$which != "Project detection records"){
+      if(!(input$which %in% c("Project detection records", "Crop to extent"))){
         paste0(input$output_name, ".tif")
       } else {
         paste0(input$output_name, ".zip")
@@ -780,9 +790,16 @@ server <- function(input, output){
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
-      if(input$which != "Project detection records"){
+      if(!(input$which %in% c("Project detection records", "Crop to extent"))){
         efficiently_write_raster(the_data(), file)
-      } else {
+      } 
+      if(input$which == "Crop to extent") {
+        num_rasters <- nlayers(the_data())
+        nam_rasters <- input$crop_generic_raster$name
+        writeRaster(the_data(), nam_rasters, bylayer = TRUE, format = "GTiff")
+        zip(zipfile = file, files = Sys.glob("*.tif"))
+      }
+      if(input$which == "Project detection records") {
         shapefile(the_data(), paste0(input$output_name, ".shp"), overwrite = TRUE)
         zip(zipfile = file, files = Sys.glob(paste0("*", input$output_name, ".*")))
       }
