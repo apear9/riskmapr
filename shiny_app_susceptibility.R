@@ -323,24 +323,6 @@ server <- function(input, output){
     req(input$propagule_pressure)
     req(input$propagule_weights)
     
-    ### Some preprocessing to force the files to be loaded in alphanumeric order
-    # per_an <- input$persistence
-    # per_an <- per_an$name
-    # per_an <- gsub(".tif", "", per_an) # Not that it really matters...
-    # est_an <- input$establishment
-    # est_an <- est_an$name
-    # est_an <- gsub(".tif", "", est_an)
-    # prg_an <- input$propagule_pressure
-    # print(prg_an)
-    # prg_an <- prg_an$name
-    # print(prg_an)
-    # prg_an <- gsub(".tif", "", prg_an)
-    # print(prg_an)
-    # per_or <- order(per_an)
-    # est_or <- order(est_an)
-    # prg_or <- order(prg_an)
-    # print(prg_or)
-    
     ### Get persistence and establishment as rasters
     persistence <- input$persistence
     persistence <- persistence$datapath
@@ -389,13 +371,14 @@ server <- function(input, output){
     
     ## Read in rasters as stack
     suit_ras <- stack(c(persistence, establishment, propagule))
-    # suit_ras_df <- as.data.frame(suit_ras)
-    # rm(suit_ras)
-    print(pryr::mem_used())
-    
+
     ## Extract distinct rows WITHOUT rows involving NAs.
+    message("Finding the unique combinations of proxies")
     suit_ras_df_dn <- unique_out_of_memory(suit_ras) 
     suit_ras_df_dn <- dplyr::distinct(suit_ras_df_dn)
+    
+    ## Remove meaningless combinations, NAs, etc.
+    message("Getting rid of meaningless combinations of values")
     ind_na <- rowSums(is.na(suit_ras_df_dn)) == 0
     suit_ras_df_dn <- suit_ras_df_dn[ind_na, ]
     ind_rn <- rowSums(suit_ras_df_dn < 0 | suit_ras_df_dn > 100) == 0
@@ -408,11 +391,10 @@ server <- function(input, output){
     est_wets <- establishment_wts 
     prg_wets <- propagule_wts
     
-    ## Compute distribution of suitability 
-    
     # Empty numeric vectors
     st <- st_sd <- sc <- sc_sd <- numeric(nrow(suit_ras_df_dn))
     # Main loop
+    message("Starting the main loop")
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
@@ -452,7 +434,6 @@ server <- function(input, output){
       st_sd[i] <- std_discrete(suit)
       
       # Now construct the propagule pressure node
-      # prg_vars <- prg_cols[i, ]
       prg_vars <- suit_ras_df_dn[i, i_prg]
       prg_mean <- sum(prg_vars * prg_wets)/sum(prg_wets)
       prg <- dtruncnorm(seq(0, 100, 25), 0, 100, prg_mean, propagule_sd)
@@ -480,14 +461,8 @@ server <- function(input, output){
       sc[i] <- exp_discrete(susc)
       sc_sd[i] <- std_discrete(susc)
     }
+    message("Exited from the main loop")
     
-    # Derive ID column
-    # suit_ras_df_dn$id <- apply(suit_ras_df_dn, 1, function(x) paste(x, collapse = ""))
-    # suit_ras_df_dn <- unite(suit_ras_df_dn, "id", sep = "", remove = TRUE)
-    # suit_ras_df_dn$Suitability <- st
-    # suit_ras_df_dn$Suitability_SD <- st_sd
-    # suit_ras_df_dn$Susceptibility <- sc
-    # suit_ras_df_dn$Susceptibility_SD <- sc_sd
     # Derive ID column
     suit_ras_df_dn <- as.data.frame(suit_ras_df_dn)
     suit_ras_df_dn$Suitability <- st 
@@ -498,28 +473,9 @@ server <- function(input, output){
     rm(st_sd, sc_sd)
     gc()
     
-    
-    # Join back to full dataset
-    # suit_ras_df$id <- apply(suit_ras_df, 1, function(x) paste(x, collapse = ""))
-    # suit_ras_df <- unite(suit_ras_df, "id", sep = "", remove = TRUE)
-    # s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = names(suit_ras_df))
-    # 
-    # rm(suit_ras_df, suit_ras_df_dn)
-    
-    # ### Put back into raster
-    # suit_ras <- stack(establishment[1])
-    # suit_ras$Suitability <- s_result$Suitability
-    # suit_ras$Suitability_SD <- s_result$Suitability_SD
-    # suit_ras$Susceptibility <- s_result$Susceptibility
-    # suit_ras$Susceptibility_SD <- s_result$Susceptibility_SD
-    # suit_ras <- dropLayer(suit_ras, 1)
-    # 
-    # rm(s_result)
-    
     # Begin the process of joining this back to the full dataset, all done by manipulating the files and without ingesting the entire raster into memory
     chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras))
-    print(pryr::mem_used())
-    
+
     # Prepare to write by constructing file names
     suit_fn <- paste0(input$suit_name, ".tif")
     suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
@@ -527,6 +483,7 @@ server <- function(input, output){
     susc_sd_fn <- paste0(input$susc_name, "_SD.tif")
     
     # Open file connections
+    message("Preparing to write rasters for suitability and susceptibility, plus uncertainty maps.")
     f1 <- writeStart(suit_ras[[1]], suit_fn, overwrite = TRUE)
     f2 <- writeStart(suit_ras[[1]], suit_sd_fn, overwrite = TRUE)
     f3 <- writeStart(suit_ras[[1]], susc_fn, overwrite = TRUE)
@@ -534,7 +491,6 @@ server <- function(input, output){
     
     # Then the loop, ingesting the raster by chunks, writing it by the same chunks
     for(i in 1:chunk_info$n){
-      print("1")
       tmp_df <- as.data.frame(
         getValues(suit_ras, row = chunk_info$row[i], nrows = chunk_info$nrows[i])
       )
@@ -545,16 +501,12 @@ server <- function(input, output){
       )
       rm(tmp_df)
       gc()
-      # vals_df <- vals_df[, c("Suitability", "Suitability_SD")]
-      print("2")
       f1 <- writeValues(f1, vals_df$Suitability, chunk_info$row[i])
       f3 <- writeValues(f3, vals_df$Susceptibility, chunk_info$row[i])
-      print("3")
       f2 <- writeValues(f2, vals_df$Suitability_SD, chunk_info$row[i])
       f4 <- writeValues(f4, vals_df$Susceptibility_SD, chunk_info$row[i])
       rm(vals_df)
       gc()
-      print(pryr::mem_used())
     }
     f1 <- writeStop(f1)
     f2 <- writeStop(f2)
@@ -563,6 +515,8 @@ server <- function(input, output){
     rm(f1, f2, f3, f4)
     gc()
     
+    # Reading in files for display
+    message("Rasters ready for display")
     suit_ras <- stack(c(suit_fn, susc_fn))
     suit_ras
     
@@ -572,7 +526,7 @@ server <- function(input, output){
     {
       
       ### Plot
-      spplot(the_plots(), c("Suitability", "Susceptibility"))
+      spplot(the_plots())
       
     }
   )
@@ -581,31 +535,7 @@ server <- function(input, output){
     
     filename = "Raster_Exports.zip",
     content = function(file){
-      # # Define this function -- we need it here
-      # efficiently_write_raster <- function(r, fn, ...){
-      #   # Find good chunk characteristics for writing to disk
-      #   tr <- blockSize(r)
-      #   # Function to write out the raster WITHOUT copying it several times in memory
-      #   f <- writeStart(r, fn, ...)
-      #   for(i in 1:tr$n){
-      #     vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
-      #     f <- writeValues(f, vals, tr$row[i])
-      #   }
-      #   f <- writeStop(f)
-      #   return(f)
-      # }
-      # Remove any existing tif files and write out the new ones
-      # if(length(Sys.glob("*.tif")) > 0){
-      #   file.remove(Sys.glob("*.tif"))
-      # }
-      # suit_fn <- paste0(input$suit_name, ".tif")
-      # suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
-      # susc_fn <- paste0(input$susc_name, ".tif")
-      # susc_sd_fn <- paste0(input$susc_name, "_SD.tif")
-      # efficiently_write_raster(the_plots()$Suitability, suit_fn)
-      # efficiently_write_raster(the_plots()$Susceptibility, susc_fn)
-      # efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn)
-      # efficiently_write_raster(the_plots()$Susceptibility_SD, susc_sd_fn)
+      # Files have already been created, so here we just zip them up. 
       zip(zipfile = file, files = Sys.glob("*.tif"))
     },
     contentType = "application/zip"
