@@ -82,6 +82,8 @@ ui <- fluidPage(
       
       uiOutput("Output_name"),
       
+      uiOutput("Crop_output_name"),
+      
       uiOutput("submit_button"),
       
       uiOutput("download_button")
@@ -533,8 +535,14 @@ server <- function(input, output){
   )
   
   output$Output_name <- renderUI(
-    if(input$which != "None"){
+    if(!(input$which %in% c("None", "Crop to extent"))){
       textInput("output_name", "Enter name of output file (no extension)", "Output_File")
+    }
+  )
+  
+  output$Crop_output_name <- renderUI(
+    if(input$which == "Crop to extent"){
+      textInput("crop_output_name", "Enter the text to append to each file name (no extension, download will be as .zip folder)", "Crop")
     }
   )
   
@@ -768,11 +776,17 @@ server <- function(input, output){
     filename = function(){
       if(!(input$which %in% c("Project detection records", "Crop to extent"))){
         # Single raster outputs will be available as .tif
-        paste0(input$output_name, ".tif")
-      } else {
-        # Bundles of (potentially) multiple files will be downloadable as a .zip archive
-        paste0(input$output_name, ".zip")
+        outname <- paste0(input$output_name, ".tif")
       }
+      if(input$which == "Project detection records"){
+        # Bundles of multiple files will be downloadable as a .zip archive
+        outname <- paste0(input$output_name, ".zip")
+      }
+      if(input$which == "Crop to extent"){
+        # Bundles of (potentially) multiple files will be downloadable as a .zip archive
+        outname <- "Downloads.zip"
+      }
+      outname
       
     },
     content = function(file){
@@ -797,6 +811,8 @@ server <- function(input, output){
       if(input$which == "Crop to extent") {
         num_rasters <- nlayers(the_data())
         nam_rasters <- input$crop_generic_raster$name
+        nam_rasters <- gsub(".tif$", "", nam_rasters)
+        nam_rasters <- paste0(nam_rasters, "_", input$crop_output_name)
         writeRaster(the_data(), nam_rasters, bylayer = TRUE, format = "GTiff")
         zip(zipfile = file, files = Sys.glob("*.tif"))
       }
