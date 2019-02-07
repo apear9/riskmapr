@@ -397,7 +397,7 @@ server <- function(input, output){
     # ncolumn <- ncol(suit_ras) # We will need this later
     
     # Begin the process of joining this back to the full dataset, all done by manipulating the files and without ingesting the entire raster into memory
-    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 20)
+    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 10)
     print(pryr::mem_used())
     
     # Prepare to write by constructing file names
@@ -445,7 +445,7 @@ server <- function(input, output){
     {
       
       ### Plot
-      spplot(the_plots(), "Suitability")
+      spplot(the_plots())
       
     }
   )
