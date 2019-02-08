@@ -2,7 +2,6 @@
 
 library(rgdal)
 library(shiny)
-library(dplyr)
 library(raster)
 library(zip)
 library(sp)
@@ -17,103 +16,103 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Rapid weed riskmapr (suitability model)"),
+  titlePanel("Rapid riskmapr - suitability for weed invasion"),
   
   # Sidebar panel for inputs ----
   
   sidebarLayout(
     
-    sidebarPanel(
-      
-      # Input: Select a file ----
-      
-      fileInput(
-        "establishment", 
-        "Spatial proxies for risk factors (establishment)",
-        multiple = TRUE,
-        accept = c(".tif")
-      ),
-      
-      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for total upload sizes <20MB."),
-      
-      textInput(
-        "establishment_weights",
-        "Risk factor weights (establishment)"
-      ),
-      
-      helpText("Enter weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
-      
-      numericInput(
-        "est_sd", 
-        "Standard deviation (establishment)",
-        value = 15,
-        min = 0.1,
-        max = 1000
-      ),
-      
-      helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
-      
-      fileInput(
-        "persistence", 
-        "Spatial proxies for risk factors (persistence)",
-        multiple = TRUE,
-        accept = c(".tif")
-      ),
-      
-      helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. For details, see above."),
-      
-      textInput(
-        "persistence_weights",
-        "Risk factor weights (persistence)"
-      ),
-      
-      helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above."),
-      
-      numericInput(
-        "per_sd", 
-        "Standard deviation (persistence)",
-        value = 15,
-        min = 0.1,
-        max = 1000
-      ),
-      
-      helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
-
-      numericInput(
-        "suitability_sd", 
-        "Standard deviation (suitability)",
-        value = 10,
-        min = 0.1,
-        max = 1000
-      ),
-      
-      helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
-      
-      actionButton("validate", "VISUALIZE RISK MODEL"),
-      
-      helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
-      
-      actionButton("submit", "RUN RISK MODEL"),
-      
-      helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
-      
-      textInput(
-        "suit_name",
-        "Optional: name risk map (suitability)",
-        "Suitability"
-      ),
-      
-      helpText("Choose a descriptive name for the generated risk map before downloading (no file extension)."),
-      
-      downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
-      
-      helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
-      
+    sidebarPanel(width = 6,
+                 
+                 # Input: Select a file ----
+                 
+                 fileInput(
+                   "establishment", 
+                   "Spatial proxies for risk factors (establishment)",
+                   multiple = TRUE,
+                   accept = c(".tif")
+                 ),
+                 
+                 helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for total upload sizes <20MB."),
+                 
+                 textInput(
+                   "establishment_weights",
+                   "Risk factor weights (establishment)"
+                 ),
+                 
+                 helpText("Enter weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
+                 
+                 numericInput(
+                   "est_sd", 
+                   "Standard deviation (establishment)",
+                   value = 15,
+                   min = 0.1,
+                   max = 100
+                 ),
+                 
+                 helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
+                 
+                 fileInput(
+                   "persistence", 
+                   "Spatial proxies for risk factors (persistence)",
+                   multiple = TRUE,
+                   accept = c(".tif")
+                 ),
+                 
+                 helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. For details, see above."),
+                 
+                 textInput(
+                   "persistence_weights",
+                   "Risk factor weights (persistence)"
+                 ),
+                 
+                 helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above."),
+                 
+                 numericInput(
+                   "per_sd", 
+                   "Standard deviation (persistence)",
+                   value = 15,
+                   min = 0.1,
+                   max = 100
+                 ),
+                 
+                 helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
+                 
+                 numericInput(
+                   "suitability_sd", 
+                   "Standard deviation (suitability)",
+                   value = 10,
+                   min = 0.1,
+                   max = 1000
+                 ),
+                 
+                 helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
+                 
+                 textInput(
+                   "suit_name",
+                   "Optional: name risk map (suitability)",
+                   "Suitability"
+                 ),
+                 
+                 helpText("Choose a descriptive name for the generated risk map (no file extension). Please choose the file name before running the tool."),
+                 
+                 actionButton("validate", "VISUALIZE RISK MODEL"),
+                 
+                 helpText("Click to visualize and validate the structure of your risk model (suitability). The model is displayed on the right-hand panel, showing uploaded spatial proxies colour-coded by assigned risk factor weights."),
+                 
+                 actionButton("submit", "RUN RISK MODEL"),
+                 
+                 helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
+                 
+                 downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
+                 
+                 helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
+                 
     ),
     
-    mainPanel(
-      visNetworkOutput("valiplot"),
-      plotOutput("mainplot")
+    mainPanel(width = 6, 
+              visNetworkOutput("valiplot"),
+              plotOutput("mainplot")
     )
     
   )
@@ -226,7 +225,7 @@ server <- function(input, output){
   
   output$valiplot <- renderVisNetwork(
     {
-
+      
       the_graph()
       
     }
@@ -248,6 +247,23 @@ server <- function(input, output){
     std_discrete <- function(x){
       sqrt(ex2_discrete(x) - exp_discrete(x)^2)
     } # Standard definitions for discrete random variables
+    
+    # Stripped down unique function from raster that does not allow for in-memory processing
+    unique_out_of_memory <- function(x){
+      nl <- nlayers(x)
+      un <- list(length = nl, mode = "list")
+      tr <- blockSize(x, n = nl, minblocks = nl * 10)
+      un <- NULL
+      for (i in 1:tr$n) {
+        v <- dplyr::distinct(
+          as.data.frame(
+            getValues(x, row = tr$row[i], nrows = tr$nrows[i])
+          )
+        )
+        un <- rbind(v, un)
+      }
+      return(un)
+    }
     
     ### Get inputs
     req(input$persistence)
@@ -287,7 +303,6 @@ server <- function(input, output){
     nn_est <- length(establishment)
     
     ## Check that lengths are what they should be
-    
     if(nn_per != length(persistence_wts)){
       stop("The number of persistence weights is not equal to the number of proxy rasters provided.")
     }
@@ -301,24 +316,30 @@ server <- function(input, output){
     
     ## Read in rasters as stack
     suit_ras <- stack(c(persistence, establishment))
-    suit_ras_df <- as.data.frame(suit_ras)
-    rm(suit_ras)
     
-    ## Extract distinct rows WITHOUT rows involving NAs.
-    suit_ras_df_dn <- distinct(suit_ras_df)
-    suit_ras_df_dn <- na.omit(suit_ras_df_dn)
-    suit_ras_df_dn <- filter_all(suit_ras_df_dn, all_vars(. >= 0 & . <= 100))
+    # Find unique combinations of values
+    message("Finding the unique combinations of proxies")
+    suit_ras_df_dn <- unique_out_of_memory(suit_ras) # ... can take a while, but doesn't break the bank when it comes to memory usage.
+    suit_ras_df_dn <- dplyr::distinct(suit_ras_df_dn)
+    
+    # Remove any rows with NAs or values outside the 0, 100 range
+    message("Getting rid of meaningless combinations of values")
+    ind_na <- rowSums(is.na(suit_ras_df_dn)) == 0
+    suit_ras_df_dn <- suit_ras_df_dn[ind_na, ]
+    ind_rn <- rowSums(suit_ras_df_dn < 0 | suit_ras_df_dn > 100) == 0
+    suit_ras_df_dn <- suit_ras_df_dn[ind_rn, ]
+    rm(ind_rn, ind_na)
+    gc()
     
     # Subsets as required for the analysis
     per_wets <- persistence_wts 
     est_wets <- establishment_wts 
     
-    ## Compute distribution of suitability 
-    
-    # Empty numeric vectors
+    # Empty numeric vectors, needed for loop
     st <- st_sd <- numeric(nrow(suit_ras_df_dn))
     
     # Main loop
+    message("Starting the main loop")
     for(i in 1:nrow(suit_ras_df_dn)){
       
       # Establishment
@@ -359,22 +380,52 @@ server <- function(input, output){
     }
     
     # Derive ID column
-    suit_ras_df_dn$Suitability <- st
+    message("Exited from main loop")
+    suit_ras_df_dn <- as.data.frame(suit_ras_df_dn)
+    suit_ras_df_dn$Suitability <- st 
+    rm(st)
     suit_ras_df_dn$Suitability_SD <- st_sd
-    rm(st, st_sd)
+    rm(st_sd)
+    gc()
     
-    # Join back to full dataset
-    s_result <- left_join(suit_ras_df, suit_ras_df_dn, by = names(suit_ras_df))
-    rm(suit_ras_df, suit_ras_df_dn)
+    # Begin the process of joining this back to the full dataset, all done by manipulating the files and without ingesting the entire raster into memory
+    chunk_info <- blockSize(suit_ras, n = nlayers(suit_ras), minblocks = nlayers(suit_ras) * 10) # the n_layers * 10 thing is arbitrary, just trying to make sure R doesn't bite off more than it can chew.
+    
+    # Prepare to write by constructing file names
+    suit_fn <- paste0(input$suit_name, ".tif")
+    suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
+    
+    # Open file connections
+    message("Preparing to write rasters for suitability and uncertainty.")
+    f1 <- writeStart(suit_ras[[1]], suit_fn, overwrite = TRUE)
+    f2 <- writeStart(suit_ras[[1]], suit_sd_fn, overwrite = TRUE)
+    
+    # Then the loop, ingesting the raster by chunks, writing it by the same chunks
+    for(i in 1:chunk_info$n){
+      tmp_df <- as.data.frame(
+        getValues(suit_ras, row = chunk_info$row[i], nrows = chunk_info$nrows[i])
+      )
+      vals_df <- dplyr::left_join(
+        tmp_df, 
+        suit_ras_df_dn, 
+        by = names(tmp_df)
+      )
+      rm(tmp_df)
+      gc()
+      f1 <- writeValues(f1, vals_df$Suitability, chunk_info$row[i])
+      f2 <- writeValues(f2, vals_df$Suitability_SD, chunk_info$row[i])
+      rm(vals_df)
+      gc()
+      
+    }
+    f1 <- writeStop(f1)
+    f2 <- writeStop(f2)
+    rm(f1, f2)
+    gc()
     
     ### Put back into raster
-    suit_ras <- stack(establishment[1])
-    suit_ras$Suitability <- s_result$Suitability
-    suit_ras$Suitability_SD <- s_result$Suitability_SD
-    suit_ras <- dropLayer(suit_ras, 1)
-    
-    rm(s_result)
-    
+    message("Raster ready for display")
+    suit_ras <- raster(suit_fn)
     suit_ras
     
   })
@@ -383,7 +434,7 @@ server <- function(input, output){
     {
       
       ### Plot
-      spplot(the_plots(), "Suitability")
+      spplot(the_plots())
       
     }
   )
@@ -392,28 +443,8 @@ server <- function(input, output){
     
     filename = "Raster_Exports.zip",
     content = function(file){
-      # Define this function -- we need it here
-      efficiently_write_raster <- function(r, fn, ...){
-        # Find good chunk characteristics for writing to disk
-        tr <- blockSize(r)
-        # Function to write out the raster WITHOUT copying it several times in memory
-        f <- writeStart(r, fn, ...)
-        for(i in 1:tr$n){
-          vals <- getValuesBlock(r, row=tr$row[i], nrows=tr$nrows[i])
-          f <- writeValues(f, vals, tr$row[i])
-        }
-        f <- writeStop(f)
-        return(f)
-      }
-      # Now begin writing
-      if(length(Sys.glob("*.tif")) > 0){
-        file.remove(Sys.glob("*.tif"))
-      }
-      suit_fn <- paste0(input$suit_name, ".tif")
-      suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
-      efficiently_write_raster(the_plots()$Suitability, suit_fn, overwrite = TRUE)
-      efficiently_write_raster(the_plots()$Suitability_SD, suit_sd_fn, overwrite = TRUE)
-      zip(zipfile = file, files = Sys.glob("*.tif"))
+      # Since all the files have already been created, all we have to do is zip them up.
+      zip(zipfile = file, files = Sys.glob(paste0(input$suit_name, "*")))
     },
     contentType = "application/zip"
     
