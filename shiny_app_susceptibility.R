@@ -482,6 +482,11 @@ server <- function(input, output){
     susc_fn <- paste0(input$susc_name, ".tif")
     susc_sd_fn <- paste0(input$susc_name, "_SD.tif")
     
+    # Remove existing .tif files so they don't get packaged up 
+    if(length(Sys.glob("*.tif")) > 0){
+      file.remove(Sys.glob("*.tif"))
+    }
+    
     # Open file connections
     message("Preparing to write rasters for suitability and susceptibility, plus uncertainty maps.")
     f1 <- writeStart(suit_ras[[1]], suit_fn, overwrite = TRUE)

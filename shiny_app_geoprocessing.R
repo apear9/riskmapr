@@ -218,7 +218,7 @@ server <- function(input, output){
     }
     
     # Buffer and mask
-    buffered_detections <- gBuffer(detections, FALSE, width = max_radius)
+    buffered_detections <- buffer(detections, width = max_radius)
     reference_raster <- crop(reference_raster, extent(buffered_detections))
     reference_raster[] <- 1
     masked_raster <- mask(reference_raster, mask = buffered_detections)
@@ -235,7 +235,7 @@ server <- function(input, output){
     }
     
     # Buffer and mask
-    buffered_detections <- gBuffer(detections, FALSE, width = max_radius)
+    buffered_detections <- buffer(detections, width = max_radius)
     reference_raster <- crop(reference_raster, extent(buffered_detections))
     masked_raster <- mask(reference_raster, mask = buffered_detections)
     return(masked_raster)
@@ -582,7 +582,7 @@ server <- function(input, output){
         max_radius <- input$max_radius
         
         # Buffer and crop
-        buffered <- gBuffer(detections, FALSE, width = max_radius)
+        buffered <- buffer(detections, width = max_radius)
         result <- crop(generic_raster, extent(buffered))
         
       }

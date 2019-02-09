@@ -395,6 +395,11 @@ server <- function(input, output){
     suit_fn <- paste0(input$suit_name, ".tif")
     suit_sd_fn <- paste0(input$suit_name, "_SD.tif")
     
+    # Remove existing .tif files so they don't get packaged up 
+    if(length(Sys.glob("*.tif")) > 0){
+      file.remove(Sys.glob("*.tif"))
+    }
+    
     # Open file connections
     message("Preparing to write rasters for suitability and uncertainty.")
     f1 <- writeStart(suit_ras[[1]], suit_fn, overwrite = TRUE)
