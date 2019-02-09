@@ -119,9 +119,7 @@ server <- function(input, output){
     }
     
     # mask reference raster within maximum distance threshold
-    mx_d_th <- max(max(distance_thresholds), max_radius)
     mask_rs <- mask_within_buffer(detections, reference_raster, max_radius)
-    # stream_raster <- mask_within_buffer_streams(detections, stream_raster, max_radius)
     
     # Convert stream raster to SpatialPixelsDataFrame and extract coordinates
     stream_raster <- crop(stream_raster, extent(mask_rs))
@@ -253,8 +251,7 @@ server <- function(input, output){
     }
     
     # mask reference raster within maximum distance threshold
-    mx_d_th <- max(max(distance_thresholds), max_radius)
-    mask_rs <- mask_within_buffer(detections, reference_raster, mx_d_th)
+    mask_rs <- mask_within_buffer(detections, reference_raster, max_radius)
     
     # Turn this into a SpatialPixelsDataFrame
     mask_px <- as(mask_rs, "SpatialPixelsDataFrame")
