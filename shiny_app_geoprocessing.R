@@ -828,6 +828,7 @@ server <- function(input, output){
     content = function(file){
       efficiently_write_raster <- function(r, fn, ...){
         # MODIFIED FROM SOURCE CODE IN THE PACKAGE "RASTER", FROM FUNCTION WRITE RASTER
+        # MODIFIED 3 FEB, 2019
         
         # Find good chunk characteristics for writing to disk
         tr <- blockSize(r)

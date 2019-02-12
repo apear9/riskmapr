@@ -305,6 +305,7 @@ server <- function(input, output){
     }
     unique_out_of_memory <- function(x){
       # MODIFIED SOURCE CODE FROM THE PACKAGE 'RASTER', FROM FUNCTION raster::unique().
+      # MODIFIED 5 FEB, 2019
       nl <- nlayers(x)
       un <- list(length = nl, mode = "list")
       tr <- blockSize(x, n = nl)
