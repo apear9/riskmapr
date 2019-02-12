@@ -72,11 +72,19 @@ ui <- fluidPage(
       
       uiOutput("Abundance_thresholds"),
       
+      uiOutput("Abundance_thresholds_help"),
+      
       uiOutput("Distance_thresholds"),
+      
+      uiOutput("Distance_thresholds_help"),
       
       uiOutput("Proxy_levels"),
       
+      uiOutput("Proxy_levels_help"),
+      
       uiOutput("Max_radius"),
+      
+      uiOutput("Max_radius_help"),
       
       # uiOutput("Proj4string"),
       
@@ -508,10 +516,26 @@ server <- function(input, output){
     }
   )
   
+  output$Abundance_thresholds_help <- renderUI(
+    {
+      if(input$which %in% c("Propagule supply")){
+        helpText("Specify abundance thresholds.")
+      }
+    }
+  )
+  
   output$Distance_thresholds <- renderUI(
     {
       if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
         textInput("distance_thresholds", "The distance thresholds for each proxy level", "")
+      }
+    }
+  )
+  
+  output$Distance_thresholds_help <- renderUI(
+    {
+      if(input$which %in% c("Propagule supply")){
+        helpText("Specify distance thresholds.")
       }
     }
   )
@@ -524,11 +548,25 @@ server <- function(input, output){
     }
   )
   
+  output$Proxy_levels_help <- renderUI(
+    {
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)")){
+        helpText("Specify proxy levels.")
+      }
+    }
+  )
+  
   output$Max_radius <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)", "Crop raster files")){
-        numericInput("max_radius", "Upper dispersal limit (m)", 1000, min = 0, max = 1e6)
+        numericInput("max_radius", "Dispersal risk area (m)", 1000, min = 0, max = 1e6)
       }
+    }
+  )
+  
+  output$Max_radius_help <- renderUI(
+    if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)", "Crop raster files")){
+       helpText("Specify the area at risk of propagule introduction from any of the recorded source infestations. Use the upper limit dispersal distance of the furthest-reaching disperal mode.")
     }
   )
   
