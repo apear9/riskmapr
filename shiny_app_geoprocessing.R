@@ -23,12 +23,12 @@ ui <- fluidPage(
           "None", 
           "Project detection records", 
           #"Project raster", 
-          "Crop to extent", 
+          "Crop raster files", 
           "Propagule supply", 
-          "Hydrochory", 
-          "Agochory", 
-          "Zoochory", 
-          "Anemochory"#, 
+          "Dispersal by water (hydrochory)", 
+          "Dispersal by humans (agochory)", 
+          "Dispersal by animals (zoochory)", 
+          "Dispersal by wind (anemochory)"#, 
           #"Stream edge to raster", 
           #"Recode stream raster"
           ), 
@@ -380,10 +380,10 @@ server <- function(input, output){
     }
   )
   
-  output$helptext4a <- renderUI(
+  output$helptext4d <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4a. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor).")
+        helpText("4d. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor).")
       }
     }
   )
@@ -404,17 +404,17 @@ server <- function(input, output){
     }
   )
   
-  output$helptext4d <- renderUI(
+  output$helptext4a <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4d. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor).")
+        helpText("4a. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor).")
       }
     }
   )
   
   output$Stream_raster <- renderUI(
     {
-      if(input$which %in% c("Hydrochory", "Agochory", "Recode stream raster")){
+      if(input$which %in% c("Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Recode stream raster")){
         fileInput("stream_raster", "Upload a raster of a linear feature", FALSE, ".tif")
       }
     }
@@ -446,7 +446,7 @@ server <- function(input, output){
   
   output$Detections <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Anemochory", "Hydrochory", "Agochory", "Crop to extent")){
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Crop raster files")){
         fileInput("detections", "Upload shapefile of the detection records", TRUE)
       }
     }
@@ -462,7 +462,7 @@ server <- function(input, output){
   
   output$Crop_generic_raster <- renderUI(
     {
-      if(input$which == "Crop to extent"){
+      if(input$which == "Crop raster files"){
         fileInput("crop_generic_raster", "Upload rasters (.tif extension, allows multiple)", TRUE, ".tif")
       }
     }
@@ -486,7 +486,7 @@ server <- function(input, output){
   
   output$Reference_raster <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Anemochory", "Hydrochory", "Zoochory", "Agochory", "Stream edge to raster")){
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by animals (zoochory)", "Dispersal by humans (agochory)", "Stream edge to raster")){
         fileInput("reference_raster", "Upload the reference raster", FALSE, ".tif")
       }
     }
@@ -495,7 +495,7 @@ server <- function(input, output){
   output$Column <- renderUI(
     {
       if(input$which == "Propagule supply"){
-        textInput("column", "Name of the column containing the number of detections per record", "")
+        textInput("column", "Name of the column containing the number of detections per record", "Abundance")
       }
     }
   )
@@ -510,7 +510,7 @@ server <- function(input, output){
   
   output$Distance_thresholds <- renderUI(
     {
-      if(input$which %in% c("Zoochory", "Hydrochory", "Agochory", "Anemochory")){
+      if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
         textInput("distance_thresholds", "The distance thresholds for each proxy level", "")
       }
     }
@@ -518,7 +518,7 @@ server <- function(input, output){
   
   output$Proxy_levels <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Anemochory", "Agochory")){
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)")){
         textInput("proxy_levels", "The proxy levels corresponding to the distance or abundance thresholds", "")
       }
     }
@@ -526,20 +526,20 @@ server <- function(input, output){
   
   output$Max_radius <- renderUI(
     {
-      if(input$which %in% c("Propagule supply", "Zoochory", "Hydrochory", "Anemochory", "Agochory", "Crop to extent")){
-        numericInput("max_radius", "Maximum radius (m)", 1000, min = 0, max = 1e6)
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)", "Crop raster files")){
+        numericInput("max_radius", "Upper dispersal limit (m)", 1000, min = 0, max = 1e6)
       }
     }
   )
   
   output$Output_name <- renderUI(
-    if(!(input$which %in% c("None", "Crop to extent"))){
+    if(!(input$which %in% c("None", "Crop raster files"))){
       textInput("output_name", "Enter name of output file (no extension)", "Output_File")
     }
   )
   
   output$Crop_output_name <- renderUI(
-    if(input$which == "Crop to extent"){
+    if(input$which == "Crop raster files"){
       textInput("crop_output_name", "Enter the text to append to each file name (no extension, download will be as .zip folder)", "Crop")
     }
   )
@@ -547,7 +547,7 @@ server <- function(input, output){
   output$submit_button <- renderUI(
     {
       if(input$which != "None"){
-        actionButton("submit", "Click here to begin geoprocessing")
+        actionButton("submit", "RUN GEOPROCESSING TOOL")
       }
     }
   )
@@ -555,7 +555,7 @@ server <- function(input, output){
   output$download_button <- renderUI(
     {
       if(input$which != "None"){
-        downloadButton("Download", "Click this button to download outputs")
+        downloadButton("Download", "DOWNLOAD OUTPUT(S)")
       }
     }
   )
@@ -563,7 +563,7 @@ server <- function(input, output){
   the_data <- eventReactive(
     input$submit,
     {
-      if(input$which == "Crop to extent"){
+      if(input$which == "Crop raster files"){
         
         # Ingest detection records
         files <- input$detections$datapath
@@ -623,7 +623,7 @@ server <- function(input, output){
         
       }
       
-      if(input$which %in% c("Zoochory", "Anemochory")){
+      if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)")){
         
         # Ingest detection records
         files <- input$detections$datapath
@@ -658,7 +658,7 @@ server <- function(input, output){
         result <- zoochory(detections, reference_raster, distance_thresholds, proxy_levels, max_radius)
       }
       
-      if(input$which %in% c("Hydrochory", "Agochory")){
+      if(input$which %in% c("Dispersal by water (hydrochory)", "Dispersal by humans (agochory)")){
         
         # Ingest stream raster
         stream_raster <- input$stream_raster
@@ -772,7 +772,7 @@ server <- function(input, output){
   output$Download <- downloadHandler(
     
     filename = function(){
-      if(!(input$which %in% c("Project detection records", "Crop to extent"))){
+      if(!(input$which %in% c("Project detection records", "Crop raster files"))){
         # Single raster outputs will be available as .tif
         outname <- paste0(input$output_name, ".tif")
       }
@@ -780,7 +780,7 @@ server <- function(input, output){
         # Bundles of multiple files will be downloadable as a .zip archive
         outname <- paste0(input$output_name, ".zip")
       }
-      if(input$which == "Crop to extent"){
+      if(input$which == "Crop raster files"){
         # Bundles of (potentially) multiple files will be downloadable as a .zip archive
         outname <- "Downloads.zip"
       }
@@ -803,10 +803,10 @@ server <- function(input, output){
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
-      if(!(input$which %in% c("Project detection records", "Crop to extent"))){
+      if(!(input$which %in% c("Project detection records", "Crop raster files"))){
         efficiently_write_raster(the_data(), file)
       } 
-      if(input$which == "Crop to extent") {
+      if(input$which == "Crop raster files") {
         num_rasters <- nlayers(the_data())
         nam_rasters <- input$crop_generic_raster$name
         nam_rasters <- gsub(".tif$", "", nam_rasters)
