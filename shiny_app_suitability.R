@@ -250,6 +250,7 @@ server <- function(input, output){
     
     # Stripped down unique function from raster that does not allow for in-memory processing
     unique_out_of_memory <- function(x){
+      # MODIFIED SOURCE CODE FROM THE PACKAGE 'RASTER', FROM FUNCTION raster::unique().
       nl <- nlayers(x)
       un <- list(length = nl, mode = "list")
       tr <- blockSize(x, n = nl, minblocks = nl * 10)

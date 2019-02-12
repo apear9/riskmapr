@@ -827,6 +827,8 @@ server <- function(input, output){
     },
     content = function(file){
       efficiently_write_raster <- function(r, fn, ...){
+        # MODIFIED FROM SOURCE CODE IN THE PACKAGE "RASTER", FROM FUNCTION WRITE RASTER
+        
         # Find good chunk characteristics for writing to disk
         tr <- blockSize(r)
         # Function to write out the raster WITHOUT copying it several times in memory

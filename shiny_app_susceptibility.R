@@ -304,6 +304,7 @@ server <- function(input, output){
       sqrt(ex2_discrete(x) - exp_discrete(x)^2)
     }
     unique_out_of_memory <- function(x){
+      # MODIFIED SOURCE CODE FROM THE PACKAGE 'RASTER', FROM FUNCTION raster::unique().
       nl <- nlayers(x)
       un <- list(length = nl, mode = "list")
       tr <- blockSize(x, n = nl)
