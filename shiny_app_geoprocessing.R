@@ -534,7 +534,7 @@ server <- function(input, output){
   
   output$Distance_thresholds_help <- renderUI(
     {
-      if(input$which %in% c("Propagule supply")){
+      if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
         helpText("Specify distance thresholds.")
       }
     }
