@@ -25,3 +25,4 @@ The process for running these Shiny apps is easy if you are using RStudio. Simpl
 * Click 'Run External' from the small drop-down menu that appears. This will allow the app to run in an internet browser, which in turn will allow the outputs to be downloaded without fuss. 
 * Click 'Run App'.
 
+![shiny_app_run_instructions](https://user-images.githubusercontent.com/17267197/52686165-38716200-2f98-11e9-89e6-4e3e1e0f4b29.png)
