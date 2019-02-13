@@ -28,19 +28,19 @@ ui <- fluidPage(
                  
                  fileInput(
                    "establishment", 
-                   "Spatial proxies for risk factors (establishment)",
+                   "Upload spatial proxies for risk factors (establishment) (.tif extension, allows multiple)",
                    multiple = TRUE,
                    accept = c(".tif")
                  ),
                  
-                 helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant establishment. Select all relevant files (must have .TIF extension) at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but functionality has only been confirmed for total upload sizes <20MB."),
+                 helpText("Select spatial proxies for all identified risk factors affecting plant establishment at once and click 'Open'. Files are automatically uploaded in alphabetical order. Upload limit is 50MB, but app functionality has only been confirmed for total upload sizes < 15MB."),
                  
                  textInput(
                    "establishment_weights",
                    "Risk factor weights (establishment)"
                  ),
                  
-                 helpText("Enter weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
+                 helpText("Enter numerical weights for all identified risk factors affecting plant establishment. Weights must equal '1', '2' or '3', be separated by commas and ordered alphabetically by spatial proxy name."),
                  
                  numericInput(
                    "est_sd", 
@@ -50,23 +50,23 @@ ui <- fluidPage(
                    max = 100
                  ),
                  
-                 helpText("Enter the standard deviation used for computing the probability distribution of plant establishment as a function of its weighted risk factors. The default is '15'. This can be changed to any reasonable value, keeping in mind that the mean is between 0 and 100 (depending on the state of each risk factor)"),
+                 helpText("Enter the standard deviation used for computing the CPT of plant establishment from its weighted risk factors. The default is '15'. This may be changed to any reasonable value in the range [0.1,100] where appropriate."),
                  
                  fileInput(
                    "persistence", 
-                   "Spatial proxies for risk factors (persistence)",
+                   "Upload spatial proxies for risk factors (persistence) (.tif extension, allows multiple)",
                    multiple = TRUE,
                    accept = c(".tif")
                  ),
                  
-                 helpText("Upload pre-processed spatial proxies for all identified risk factors affecting plant persistence. For details, see above."),
+                 helpText("Select spatial proxies for all identified risk factors affecting plant persistence at once and click 'Open'. For details, see above"),
                  
                  textInput(
                    "persistence_weights",
                    "Risk factor weights (persistence)"
                  ),
                  
-                 helpText("Enter the weights for all identified risk factors affecting plant persistence. For details, see above."),
+                 helpText("Enter numerical weights for all identified risk factors affecting plant persistence. For details, see above."),
                  
                  numericInput(
                    "per_sd", 
@@ -76,7 +76,7 @@ ui <- fluidPage(
                    max = 100
                  ),
                  
-                 helpText("Enter the standard deviation used for computing the probability distribution of plant persistence. For details, see above."),
+                 helpText("Enter the standard deviation used for computing the CPT of plant persistence. For details, see above."),
                  
                  numericInput(
                    "suitability_sd", 
@@ -86,15 +86,15 @@ ui <- fluidPage(
                    max = 1000
                  ),
                  
-                 helpText("Enter the standard deviation used for computing the probability distribution of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10'. This is lower than SD = '15' above in order to limit the propagated uncertainty in the model, but can be changed to any reasonable value."),
+                 helpText("Enter the standard deviation used for computing the CPT of invasion risk (suitability) as a function of plant establishment and persistence. The default is '10' in order to limit the propagated uncertainty in the model, but may be changed to any reasonable value in the range [0.1,100]."),
                  
                  textInput(
                    "suit_name",
-                   "Optional: name risk map (suitability)",
+                   "Optional: name risk map (suitability) (no extension)",
                    "Suitability"
                  ),
                  
-                 helpText("Choose a descriptive name for the generated risk map (no file extension). Please choose the file name before running the tool."),
+                 helpText("Choose a descriptive name for the generated risk map. Must be specified before running the tool."),
                  
                  actionButton("validate", "VISUALIZE RISK MODEL"),
                  
@@ -102,11 +102,11 @@ ui <- fluidPage(
                  
                  actionButton("submit", "RUN RISK MODEL"),
                  
-                 helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the model expected value), and an uncertainty map (the model standard deviation) This may take several minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
+                 helpText("Click to run your risk model (suitability). Two spatial files (.TIF) are generated: a suitability index map (the expected value), and an uncertainty map (the standard deviation). This should take no longer than 1-2 minutes, depending on the size of spatial proxies. Once completed, the risk map is displayed on the right-hand panel."),
                  
                  downloadButton(outputId = "downloadData", label = "DOWNLOAD RISK MAP"),
                  
-                 helpText("Once the risk map has been generated and displayed, click to download a .ZIP folder with model outputs (suitability index map + uncertainty map).")
+                 helpText("Once the risk map has been generated and displayed, click to download zipped .TIF files (suitability index map + uncertainty map).")
                  
     ),
     

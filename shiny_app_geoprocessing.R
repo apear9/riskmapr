@@ -25,10 +25,10 @@ ui <- fluidPage(
           #"Project raster", 
           "Crop raster files", 
           "Propagule supply", 
-          "Dispersal by water (hydrochory)", 
-          "Dispersal by humans (agochory)", 
           "Dispersal by animals (zoochory)", 
-          "Dispersal by wind (anemochory)"#, 
+          "Dispersal by wind (anemochory)", 
+          "Dispersal by water (hydrochory)", 
+          "Dispersal by humans (agochory)"#, 
           #"Stream edge to raster", 
           #"Recode stream raster"
           ), 
@@ -389,7 +389,7 @@ server <- function(input, output){
   output$helptext3 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("3. Propagule supply: Use this tool to generate a spatial proxy for propagule supply within the specified dispersal risk area around weed detection records. Abundance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'propagule supply'). Output is a .TIF file.")
+        helpText("3. Propagule supply: Use this tool to generate a spatial proxy for propagule supply within the specified dispersal risk area around weed detection records. Abundance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Propagule supply'). Output is a .TIF file.")
       }
     }
   )
@@ -413,7 +413,7 @@ server <- function(input, output){
   output$helptext4c <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4c. Dispersal by water (hydrochory): Use this tool to generate a spatial proxy for propagule dispersal via water along linear features (e.g. streams) within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Agochory'). Output is a .TIF file.")
+        helpText("4c. Dispersal by water (hydrochory): Use this tool to generate a spatial proxy for propagule dispersal via water along linear features (e.g. streams) within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Hydrochory'). Output is a .TIF file.")
       }
     }
   )
@@ -429,7 +429,7 @@ server <- function(input, output){
   output$Stream_raster <- renderUI(
     {
       if(input$which %in% c("Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Recode stream raster")){
-        fileInput("stream_raster", "Upload a raster of a linear feature (e.g. streams, roads)", FALSE, ".tif")
+        fileInput("stream_raster", "Upload raster of a linear feature (e.g. streams, roads) (.tif extension)", FALSE, ".tif")
       }
     }
   )
@@ -469,7 +469,7 @@ server <- function(input, output){
   output$Detections_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Crop raster files")){
-        helpText("Ensure to select the entire collection of files which make up the shapefile (same filename and stored in the same directory).")
+        helpText("Select the entire collection of files which make up the shapefile (same filename before extension).")
       }
     }
   )
@@ -501,7 +501,7 @@ server <- function(input, output){
   output$Generic_shapefile_help <- renderUI(
     {
       if(input$which %in% c("Project detection records")){
-        helpText("Ensure to select the entire collection of files which make up the shapefile (same filename and stored in the same directory).")
+        helpText("Select the entire collection of files which make up the shapefile (same filename before extension).")
       }
     }
   )
@@ -517,7 +517,7 @@ server <- function(input, output){
   output$Reference_raster <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by animals (zoochory)", "Dispersal by humans (agochory)", "Stream edge to raster")){
-        fileInput("reference_raster", "Upload cropped study area reference raster", FALSE, ".tif")
+        fileInput("reference_raster", "Upload cropped study area reference raster (.tif extension)", FALSE, ".tif")
       }
     }
   )
@@ -525,7 +525,7 @@ server <- function(input, output){
   output$Column <- renderUI(
     {
       if(input$which == "Propagule supply"){
-        textInput("column", "Field name for abundance per record", "Abundance")
+        textInput("column", "Field name for abundance per weed detection record", "Abundance")
       }
     }
   )
@@ -533,7 +533,7 @@ server <- function(input, output){
   output$Column_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply")){
-        helpText("Specify the name of the field/column in the shapefile's attribute table, which contains a (observed or estimated) measure of abundance for each detection record (must be numerical).")
+        helpText("Specify the name of the field/column in the shapefile's attribute table, which contains a (observed or estimated) measure of abundance for each detection record (must be numerical).The default is 'Abundance'")
       }
     }
   )
@@ -549,7 +549,7 @@ server <- function(input, output){
   output$Abundance_thresholds_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply")){
-        helpText("Specify abundance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for propagule supply). The number of thresholds must equal the number of risk levels + 1. Set the upper threshold arbitrarily high to ensure valid computations.")
+        helpText("Specify abundance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for propagule supply). Each interval is inclusive of the lower threshold and exclusive of the higher threshold. The number of thresholds must equal the number of risk levels n + 1. Set the highest threshold arbitrarily high to ensure valid computations.")
       }
     }
   )
@@ -565,7 +565,7 @@ server <- function(input, output){
   output$Distance_thresholds_help <- renderUI(
     {
       if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
-        helpText("Specify distance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for the dispersal mode). The number of thresholds must equal the number of risk levels + 1. Set the lowest threshold to '0' and the upper threshold equal to the 'dispersal risk area' ensure valid computations.")
+        helpText("Specify distance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for the dispersal mode). Each interval is inclusive of the lower threshold and exclusive of the higher threshold. The number of thresholds must equal the number of risk levels n + 1. Set the lowest threshold to '0' and the highest threshold equal to the 'dispersal risk area' to ensure valid computations. Where the upper limit for the dispersal mode [u] is less than the dispersal risk area [d], set the penultimate threshold to equal [u], and the ultimate threshold to equal [d].")
       }
     }
   )
@@ -581,7 +581,7 @@ server <- function(input, output){
   output$Proxy_levels_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)")){
-        helpText("Enter the numerical value assigned to each discrete state ('risk level') of propagule supply or the dispersal mode. The number of levels must equal the number of abundance/distance thresholds - 1.")
+        helpText("Enter the numerical value assigned to each discrete state ('risk level') of propagule supply or the dispersal mode. The number of values must equal the number of abundance/distance thresholds n - 1. Where the upper limit for the dispersal mode [u] is less than the dispersal risk area [d], assign the value '0' to the distance band [u,d].")
       }
     }
   )
