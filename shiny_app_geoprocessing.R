@@ -8,7 +8,7 @@ ui <- fluidPage(
   
   # App title
   
-  titlePanel("Rapid weed riskmapr (susceptibility model) - geoprocessing tools"),
+  titlePanel("Rapid weed riskmapr - geoprocessing tools"),
   
   # Sidebar panel for inputs ----
   
@@ -60,15 +60,21 @@ ui <- fluidPage(
       
       uiOutput("Generic_shapefile"),
       
+      uiOutput("Generic_shapefile_help"),
+      
       uiOutput("Generic_raster"),
       
       uiOutput("Crop_generic_raster"),
       
       uiOutput("Detections"),
       
+      uiOutput("Detections_help"),
+      
       uiOutput("Reference_raster"),
       
       uiOutput("Column"),
+      
+      uiOutput("Column_help"),
       
       uiOutput("Abundance_thresholds"),
       
@@ -367,7 +373,7 @@ server <- function(input, output){
   output$helptext1 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("1. Project detection records: Use this tool to project weed detection records to the same coordinate system as the reference raster (optional, ideally this step has already been done during GIS pre-processing).")
+        helpText("1. Project detection records: Use this tool to ensure a consistent spatial reference between weed detection records and the study area reference raster. Output is a zipped .SHP file.")
        }
     }
   )
@@ -375,7 +381,7 @@ server <- function(input, output){
   output$helptext2 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("2. Crop raster files: Use this tool to crop the reference raster and spatial proxies for risk factors affecting plant establishment and persistence to the dispersal risk area around source infestations (required, to limit computational demands on the susceptbility model app).")
+        helpText("2. Crop raster files: Use this tool to crop the study area reference raster and all spatial proxies for risk factors affecting suitability (establishment and persistence) to the specified dispersal risk area around weed detection records. REQUIRED to limit computational demands on the riskmapr - susceptibility model app. Outputs are zipped .TIF files.")
       }
     }
   )
@@ -383,7 +389,7 @@ server <- function(input, output){
   output$helptext3 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("3. Propagule supply: Use this tool to define abundance-based thresholds for propagule supply from source infestations within the dispersal risk area (required).")
+        helpText("3. Propagule supply: Use this tool to generate a spatial proxy for propagule supply within the specified dispersal risk area around weed detection records. Abundance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'propagule supply'). Output is a .TIF file.")
       }
     }
   )
@@ -391,7 +397,7 @@ server <- function(input, output){
   output$helptext4d <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4d. Dispersal by humans (agochory): Use this tool to define distance-based thresholds for propagule dispersal via human transportation (optional, only if identified risk factor).")
+        helpText("4d. Dispersal by humans (agochory): Use this tool to generate a spatial proxy for propagule dispersal via human transportation along linear features (e.g. roads) within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Agochory'). Output is a .TIF file.")
       }
     }
   )
@@ -399,7 +405,7 @@ server <- function(input, output){
   output$helptext4b <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4b. Dispersal by wind (anemochory): Use this tool to define distance-based thresholds for propagule dispersal via wind (optional, only if identified risk factor).")
+        helpText("4b. Dispersal by wind (anemochory): Use this tool to generate a spatial proxy for propagule dispersal via wind within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Anemochory'). Output is a .TIF file.")
       }
     }
   )
@@ -407,7 +413,7 @@ server <- function(input, output){
   output$helptext4c <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4c. Dispersal by water (hydrochory): Use this tool to define distance-based thresholds for propagule dispersal via water (optional, only if identified risk factor).")
+        helpText("4c. Dispersal by water (hydrochory): Use this tool to generate a spatial proxy for propagule dispersal via water along linear features (e.g. streams) within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Agochory'). Output is a .TIF file.")
       }
     }
   )
@@ -415,7 +421,7 @@ server <- function(input, output){
   output$helptext4a <- renderUI(
     {
       if(input$which == "None"){
-        helpText("4a. Dispersal by animals (zoochory): Use this tool to define distance-based thresholds for propagule dispersal via animal ingestion or attachment (optional, only if identified risk factor).")
+        helpText("4a. Dispersal by animals (zoochory): Use this tool to generate a spatial proxy for propagule dispersal via animal ingestion (endoozoochory) or attachment (epizoochory) within the specified dispersal risk area. Distance thresholds are used to classify the output into discrete states (the numerical values assigned to the defined 'risk levels' of 'Zoochory'). Output is a .TIF file.")
       }
     }
   )
@@ -423,7 +429,7 @@ server <- function(input, output){
   output$Stream_raster <- renderUI(
     {
       if(input$which %in% c("Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Recode stream raster")){
-        fileInput("stream_raster", "Upload a raster of a linear feature", FALSE, ".tif")
+        fileInput("stream_raster", "Upload a raster of a linear feature (e.g. streams, roads)", FALSE, ".tif")
       }
     }
   )
@@ -455,7 +461,15 @@ server <- function(input, output){
   output$Detections <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Crop raster files")){
-        fileInput("detections", "Upload shapefile of the detection records", TRUE)
+        fileInput("detections", "Upload shapefile of projected weed detection records", TRUE)
+      }
+    }
+  )
+  
+  output$Detections_help <- renderUI(
+    {
+      if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Crop raster files")){
+        helpText("Ensure to select the entire collection of files which make up the shapefile (same filename and stored in the same directory).")
       }
     }
   )
@@ -463,7 +477,7 @@ server <- function(input, output){
   output$Generic_raster <- renderUI(
     {
       if(input$which %in% c("Project raster", "Project detection records")){
-        fileInput("generic_raster", "Upload a raster (.tif extension)", FALSE, ".tif")
+        fileInput("generic_raster", "Upload study area reference raster (.tif extension)", FALSE, ".tif")
       }
     }
   )
@@ -479,7 +493,15 @@ server <- function(input, output){
   output$Generic_shapefile <- renderUI(
     {
       if(input$which %in% c("Project detection records")){
-        fileInput("generic_shapefile", "Upload a shapefile of the detection records", TRUE)
+        fileInput("generic_shapefile", "Upload shapefile of weed detection records", TRUE)
+      }
+    }
+  )
+  
+  output$Generic_shapefile_help <- renderUI(
+    {
+      if(input$which %in% c("Project detection records")){
+        helpText("Ensure to select the entire collection of files which make up the shapefile (same filename and stored in the same directory).")
       }
     }
   )
@@ -495,7 +517,7 @@ server <- function(input, output){
   output$Reference_raster <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by wind (anemochory)", "Dispersal by water (hydrochory)", "Dispersal by animals (zoochory)", "Dispersal by humans (agochory)", "Stream edge to raster")){
-        fileInput("reference_raster", "Upload the reference raster", FALSE, ".tif")
+        fileInput("reference_raster", "Upload cropped study area reference raster", FALSE, ".tif")
       }
     }
   )
@@ -503,7 +525,15 @@ server <- function(input, output){
   output$Column <- renderUI(
     {
       if(input$which == "Propagule supply"){
-        textInput("column", "Name of the column containing the number of detections per record", "Abundance")
+        textInput("column", "Field name for abundance per record", "Abundance")
+      }
+    }
+  )
+  
+  output$Column_help <- renderUI(
+    {
+      if(input$which %in% c("Propagule supply")){
+        helpText("Specify the name of the field/column in the shapefile's attribute table, which contains a (observed or estimated) measure of abundance for each detection record (must be numerical).")
       }
     }
   )
@@ -511,7 +541,7 @@ server <- function(input, output){
   output$Abundance_thresholds <- renderUI(
     {
       if(input$which %in% c("Propagule supply")){
-        textInput("abundance_thresholds", "The abundance thresholds for each proxy level", "")
+        textInput("abundance_thresholds", "Abundance thresholds for each risk level", "")
       }
     }
   )
@@ -519,7 +549,7 @@ server <- function(input, output){
   output$Abundance_thresholds_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply")){
-        helpText("Specify abundance thresholds.")
+        helpText("Specify abundance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for propagule supply). The number of thresholds must equal the number of risk levels + 1. Set the upper threshold arbitrarily high to ensure valid computations.")
       }
     }
   )
@@ -527,7 +557,7 @@ server <- function(input, output){
   output$Distance_thresholds <- renderUI(
     {
       if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
-        textInput("distance_thresholds", "The distance thresholds for each proxy level", "")
+        textInput("distance_thresholds", "Distance thresholds for each risk level", "")
       }
     }
   )
@@ -535,7 +565,7 @@ server <- function(input, output){
   output$Distance_thresholds_help <- renderUI(
     {
       if(input$which %in% c("Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by humans (agochory)", "Dispersal by wind (anemochory)")){
-        helpText("Specify distance thresholds.")
+        helpText("Specify distance thresholds to classify the output into discrete states (corresponding to the 'risk levels' defined for the dispersal mode). The number of thresholds must equal the number of risk levels + 1. Set the lowest threshold to '0' and the upper threshold equal to the 'dispersal risk area' ensure valid computations.")
       }
     }
   )
@@ -543,7 +573,7 @@ server <- function(input, output){
   output$Proxy_levels <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)")){
-        textInput("proxy_levels", "The proxy levels corresponding to the distance or abundance thresholds", "")
+        textInput("proxy_levels", "Risk levels corresponding to distance or abundance thresholds", "")
       }
     }
   )
@@ -551,7 +581,7 @@ server <- function(input, output){
   output$Proxy_levels_help <- renderUI(
     {
       if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)")){
-        helpText("Specify proxy levels.")
+        helpText("Enter the numerical value assigned to each discrete state ('risk level') of propagule supply or the dispersal mode. The number of levels must equal the number of abundance/distance thresholds - 1.")
       }
     }
   )
@@ -566,19 +596,19 @@ server <- function(input, output){
   
   output$Max_radius_help <- renderUI(
     if(input$which %in% c("Propagule supply", "Dispersal by animals (zoochory)", "Dispersal by water (hydrochory)", "Dispersal by wind (anemochory)", "Dispersal by humans (agochory)", "Crop raster files")){
-       helpText("Specify the area at risk of propagule introduction from any of the recorded source infestations. Use the upper limit dispersal distance of the furthest-reaching disperal mode.")
+       helpText("Specify the area at risk of propagule introduction from any of the source infestations included in the shapefile. Use the upper limit dispersal distance of the furthest-reaching disperal mode identified in your susceptibility model.")
     }
   )
   
   output$Output_name <- renderUI(
     if(!(input$which %in% c("None", "Crop raster files"))){
-      textInput("output_name", "Enter name of output file (no extension)", "Output_File")
+      textInput("output_name", "Enter descriptive name of output file (no extension)", "Output_File")
     }
   )
   
   output$Crop_output_name <- renderUI(
     if(input$which == "Crop raster files"){
-      textInput("crop_output_name", "Enter the text to append to each file name (no extension, download will be as .zip folder)", "Crop")
+      textInput("crop_output_name", "Enter descriptive suffix to append to each output file (no extension)", "Crop")
     }
   )
   

@@ -4,9 +4,9 @@ This is the GitHub repository for the suite of riskmapr shiny apps.
 
 There are three .R files corresponding to the three Shiny apps:
 
-* shiny_app_geoprocessing.R, which provides the common geoprocessing functions required to prepare the data for use in the other apps.
-* shiny_app_suitability.R, which allows users to create weed invasion suitability maps and download the rasters. 
-* shiny_app_susceptibility.R, which allows users to create weed invasion suitability and susceptibility maps and download the rasters.
+* shiny_app_geoprocessing.R, which lets users perform a range of customized geoprocessing functions to prepare spatial data for use in the app shiny_app_susceptibility, and download the outputs.
+* shiny_app_suitability.R, which lets users run a spatially explicit model of suitability for weed invasion, and download the generated risk maps. 
+* shiny_app_susceptibility.R, which lets users run a spatially explicit model of susceptibility to weed invasion, and download the generated risk maps.
 
 There are two additional scripts which can be run to ensure the R packages required for the apps are installed:
 
