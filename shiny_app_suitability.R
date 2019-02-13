@@ -1,4 +1,4 @@
-## Back end for suitability/susceptibility BN
+## Back end for suitability BN
 
 library(rgdal)
 library(shiny)
