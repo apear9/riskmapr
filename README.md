@@ -17,7 +17,7 @@ There are two additional scripts which can be run to ensure the R packages requi
 
 The process for running these Shiny apps is easy if you are using RStudio. Simply:
 
-* Download the code for the apps.
+* Download the code for the apps. Please make sure the R scripts have been saved in their own folder. It is safest to create a new folder to contain them.  
 * Install the requisite packages using the installing_packages scripts.
 * Open the .R file for the app you want to run.
 * Go to the 'Run App' button in the top-right of the script window.
