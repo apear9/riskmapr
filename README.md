@@ -21,12 +21,18 @@ The other files in the repository exist for the purposes of licensing this softw
 
 The process for running these Shiny apps is easy if you are using RStudio. Simply:
 
-* Download the code for the apps. Please make sure the R scripts have been saved in a new folder.   
+* Download the code for the apps. Please make sure the R scripts have been saved in a new folder.  
+
+![download](https://user-images.githubusercontent.com/17267197/52981526-f4fd7480-342b-11e9-8ea4-d2e296418c6c.png)
+
 * Install the requisite packages using the installing_packages scripts.
 * Open the .R file for the app you want to run.
 * Go to the 'Run App' button in the top-right of the script window. 
     * Click on the small black arrow next to the button.
     * Click 'Run External' from the small drop-down menu that appears. This will allow the app to run in an internet browser, which in turn will allow the outputs to be downloaded without fuss. 
+
+![runexternalfurtherinstructions](https://user-images.githubusercontent.com/17267197/52981533-fd55af80-342b-11e9-82d7-374203bc4371.png)
+
 * Click 'Run App'.
 
 ![shiny_app_run_instructions](https://user-images.githubusercontent.com/17267197/52686165-38716200-2f98-11e9-89e6-4e3e1e0f4b29.png)
