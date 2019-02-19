@@ -17,7 +17,7 @@ There are two additional scripts which can be run to ensure the R packages requi
 
 The other files in the repository exist for the purposes of licensing this software under GPL v3.0 and supporting the website that holds this documentation. These are not used to run the riskmapr apps. 
 
-## Running the shiny apps locally
+## Deploying and running the shiny apps locally
 
 The process for running these Shiny apps is easy if you are using RStudio. Simply:
 
@@ -36,3 +36,7 @@ The process for running these Shiny apps is easy if you are using RStudio. Simpl
 * Click 'Run App'.
 
 ![shiny_app_run_instructions](https://user-images.githubusercontent.com/17267197/52686165-38716200-2f98-11e9-89e6-4e3e1e0f4b29.png)
+
+## Deploying the shiny apps online to your own shinyapps.io account
+
+Instructions to come. 
