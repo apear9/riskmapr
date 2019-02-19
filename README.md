@@ -48,14 +48,12 @@ Once the shinyapps.io account has been created, simply:
 
 ![publishapp](https://user-images.githubusercontent.com/17267197/53022457-f029d680-34a6-11e9-9f85-10bf21d38de7.png)
 
-* Click through the next few windows asking you to choose a publishing service. Choose shinyapps.io. 
-
-![connectaccount](https://user-images.githubusercontent.com/17267197/53022582-341cdb80-34a7-11e9-8c6f-ffadad97eefc.PNG)
+* Click through the next few windows asking you to choose a publishing service. Choose shinyapps.io when asked which one to use. 
 
 ![connectaccount2](https://user-images.githubusercontent.com/17267197/53022651-5878b800-34a7-11e9-9191-b18646988f8b.PNG)
 
 * You will be asked to link your shinyapps.io account to your computer so that the app can be published through RStudio. 
-    * You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
+* You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
     
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG)
 
@@ -72,7 +70,6 @@ Once the shinyapps.io account has been created, simply:
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53023259-91655c80-34a8-11e9-9c3c-e6991d5e1f8c.PNG)
 
 * Click 'Connect Account'.
-    
 * Now the publishing menu should be open. 
 
 ![publishingmenu2](https://user-images.githubusercontent.com/17267197/53023364-cd98bd00-34a8-11e9-822b-28062cd24178.png)
@@ -81,8 +78,5 @@ Once the shinyapps.io account has been created, simply:
 * Then, firstly, click the button 'Uncheck All' (indicated as 1. in the figure above). 
 * Secondly, rename the app to something of your choosing (in the box indicated as 2. in the figure above).
 * Thirdly, click the Publish button (3. in the figure above).
-    
 * R may prompt you to install packages. Do this if required. 
 * A new window should open detailing the progress of RStudio in deploying the app to your shinyapps.io account. An internet browser window will open once this is complete, and you will be able to use the app online. The URL can be shared with anyone. 
-
-
