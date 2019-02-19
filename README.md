@@ -66,9 +66,6 @@ Once the shinyapps.io account has been created, simply:
 ![revealaccesstoken](https://user-images.githubusercontent.com/17267197/53022905-e654a300-34a7-11e9-8a29-0e19603c8dd7.png)
 
 * Copy and paste the codechunk starting with `rsconnect::` into this window which you should have open in RStudio.
-    
-![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53023259-91655c80-34a8-11e9-9c3c-e6991d5e1f8c.PNG)
-
 * Click 'Connect Account'.
 * Now the publishing menu should be open. 
 
