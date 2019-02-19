@@ -43,8 +43,36 @@ There may be situations where it is desirable to share the app with collaborator
 
 Once the shinyapps.io account has been created, simply:
 
-* STEP 1
-* STEP 2
-* STEP 3
+* Make sure all required packages have been installed on your machine.
+* Open the R script for the desired app in RStudio and click the blue publishing icon in the top right-hand corner of the scripting window.
 
-Instructions to come. 
+![publishapp](https://user-images.githubusercontent.com/17267197/53022457-f029d680-34a6-11e9-9f85-10bf21d38de7.png)
+
+* Click through the next few windows asking you to choose a publishing service. Choose shinyapps.io. 
+
+![connectaccount](https://user-images.githubusercontent.com/17267197/53022582-341cdb80-34a7-11e9-8c6f-ffadad97eefc.PNG)
+
+![connectaccount2](https://user-images.githubusercontent.com/17267197/53022651-5878b800-34a7-11e9-9191-b18646988f8b.PNG)
+
+* You will be asked to link your shinyapps.io account to your computer so that the app can be published through RStudio. 
+    * You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
+![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG)
+    * Find the menu for the access tokens. The directions are indicated below.
+![findaccesstokens](https://user-images.githubusercontent.com/17267197/53022855-ca510180-34a7-11e9-90da-bea95dc8d429.png)
+    * You will find a table with entries that look like this. Select your access token and click on the 'Show' button. You will then be taken to a pop-up window where you can click a button reading 'Show Secret'. Click on it.
+![revealaccesstoken](https://user-images.githubusercontent.com/17267197/53022905-e654a300-34a7-11e9-8a29-0e19603c8dd7.png)
+    * Copy and paste the codechunk starting with `rsconnect::` into this window which you should have open in RStudio.
+![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53023259-91655c80-34a8-11e9-9c3c-e6991d5e1f8c.PNG)
+    * Click 'Connect Account'.
+    
+* Now the publishing menu should be open. 
+![publishingmenu2](https://user-images.githubusercontent.com/17267197/53023364-cd98bd00-34a8-11e9-822b-28062cd24178.png)
+    * Before proceeding any further, check that the app is being uploaded to the right account.
+    * Then, firstly, click the button 'Uncheck All' (indicated as 1. in the figure above). 
+    * Secondly, rename the app to something of your choosing (in the box indicated as 2. in the figure above).
+    * Thirdly, click the Publish button (3. in the figure above).
+    
+* R may prompt you to install packages. Do this if required. 
+* A new window should open detailing the progress of RStudio in deploying the app to your shinyapps.io account. An internet browser window will open once this is complete, and you will be able to use the app online. The URL can be shared with anyone. 
+
+
