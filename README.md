@@ -39,4 +39,12 @@ The process for running these Shiny apps is easy if you are using RStudio. Simpl
 
 ## Deploying the shiny apps online to your own shinyapps.io account
 
+There may be situations where it is desirable to share the app with collaborators without forcing them to interact with the code or the R language. In this case, one option is to deploy the app to [shinyapps.io](https://www.shinyapps.io/) (or some other R Shiny server). An account with [shinyapps.io](https://www.shinyapps.io) with space for 5 apps is free, so we provide instructions for deploying the app to this service. Go to the website and sign up following the instructions on the page.
+
+Once the shinyapps.io account has been created, simply:
+
+* STEP 1
+* STEP 2
+* STEP 3
+
 Instructions to come. 
