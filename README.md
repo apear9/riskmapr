@@ -1,6 +1,6 @@
 # The riskmapr shiny apps
 
-This website/GitHub repository is for the suite of riskmapr shiny apps. In this document, we outline how to download, run and use them. 
+This website/GitHub repository is for the suite of riskmapr shiny apps. In this document, we outline how to download and run them. 
 
 ## Contents of the repository
 
@@ -17,7 +17,7 @@ There are two additional scripts which can be run to ensure the R packages requi
 
 The other files in the repository exist for the purposes of licensing this software under GPL v3.0 and supporting the website that holds this documentation. These are not used to run the riskmapr apps. 
 
-# Running the shiny apps
+## Running the shiny apps
 
 The process for running these Shiny apps is easy if you are using RStudio. Simply:
 
