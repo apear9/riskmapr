@@ -56,17 +56,27 @@ Once the shinyapps.io account has been created, simply:
 
 * You will be asked to link your shinyapps.io account to your computer so that the app can be published through RStudio. 
     * You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
+    
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG)
+
     * Find the menu for the access tokens. The directions are indicated below.
+    
 ![findaccesstokens](https://user-images.githubusercontent.com/17267197/53022855-ca510180-34a7-11e9-90da-bea95dc8d429.png)
+
     * You will find a table with entries that look like this. Select your access token and click on the 'Show' button. You will then be taken to a pop-up window where you can click a button reading 'Show Secret'. Click on it.
+    
 ![revealaccesstoken](https://user-images.githubusercontent.com/17267197/53022905-e654a300-34a7-11e9-8a29-0e19603c8dd7.png)
+
     * Copy and paste the codechunk starting with `rsconnect::` into this window which you should have open in RStudio.
+    
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53023259-91655c80-34a8-11e9-9c3c-e6991d5e1f8c.PNG)
+
     * Click 'Connect Account'.
     
 * Now the publishing menu should be open. 
+
 ![publishingmenu2](https://user-images.githubusercontent.com/17267197/53023364-cd98bd00-34a8-11e9-822b-28062cd24178.png)
+
     * Before proceeding any further, check that the app is being uploaded to the right account.
     * Then, firstly, click the button 'Uncheck All' (indicated as 1. in the figure above). 
     * Secondly, rename the app to something of your choosing (in the box indicated as 2. in the figure above).
