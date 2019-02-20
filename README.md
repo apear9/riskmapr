@@ -55,6 +55,8 @@ Once the shinyapps.io account has been created, simply:
 * You will be asked to link your shinyapps.io account to your computer so that the app can be published through RStudio. 
 * You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
 
+<img src="https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG" width="200">
+
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG)
 
 * Find the menu for the access tokens. The directions are indicated below.
