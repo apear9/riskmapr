@@ -50,12 +50,14 @@ Once the shinyapps.io account has been created, simply:
 
 * Click through the next few windows asking you to choose a publishing service. Choose shinyapps.io when asked which one to use. 
 
+<img src="https://user-images.githubusercontent.com/17267197/53022651-5878b800-34a7-11e9-9191-b18646988f8b.PNG" width="500">
+
 ![connectaccount2](https://user-images.githubusercontent.com/17267197/53022651-5878b800-34a7-11e9-9191-b18646988f8b.PNG)
 
 * You will be asked to link your shinyapps.io account to your computer so that the app can be published through RStudio. 
 * You will see this screen. From here, go to an internet browser and log into shinyapps.io using your account details.
 
-<img src="https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG" width="200">
+<img src="https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG" width="500">
 
 ![linkshinyappsioaccount](https://user-images.githubusercontent.com/17267197/53022687-6af2f180-34a7-11e9-9bce-76a35e8a685b.PNG)
 
@@ -70,6 +72,8 @@ Once the shinyapps.io account has been created, simply:
 * Copy and paste the codechunk starting with `rsconnect::` into this window which you should have open in RStudio.
 * Click 'Connect Account'.
 * Now the publishing menu should be open. 
+
+<img src="https://user-images.githubusercontent.com/17267197/53023364-cd98bd00-34a8-11e9-822b-28062cd24178.png" width="500">
 
 ![publishingmenu2](https://user-images.githubusercontent.com/17267197/53023364-cd98bd00-34a8-11e9-822b-28062cd24178.png)
 
