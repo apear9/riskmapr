@@ -10,7 +10,7 @@ The GitHub repository apear9/riskmapr contains three .R files corresponding to t
 * shiny_app_suitability.R, which lets users run a spatially explicit model of suitability for weed invasion, and download the generated risk maps. 
 * shiny_app_susceptibility.R, which lets users run a spatially explicit model of susceptibility to weed invasion, and download the generated risk maps.
 
-The folder sensitivity_analysis contains the scripts required to perform a sensitivity analysis on our model, with a focus on the resolution of the underlying spatial data, the uncertainties chosen for the child nodes of the network, and the numerical values assigned to the discrete risk factor states.
+The folder sensitivity_analysis contains the scripts required to perform a sensitivity analysis on our model, with a focus on the resolution of the underlying spatial data, the uncertainties chosen for the child nodes of the network, and the numerical values assigned to the discrete risk factor states. Further instructions are provided in a readme file in that folder. 
 
 There are two additional scripts which can be run to ensure the R packages required for the apps are installed:
 
