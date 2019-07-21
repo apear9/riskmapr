@@ -21,6 +21,7 @@ ui <- fluidPage(
         label = "Select the geoprocessing workflow you need:",
         choices = c(
           "None", 
+          "Download example data",
           "Project detection records", 
           #"Project raster", 
           "Crop raster files", 
@@ -35,6 +36,8 @@ ui <- fluidPage(
         selected = "None", 
         multiple = FALSE
       ),
+      
+      uiOutput("helptext0"),
       
       uiOutput("helptext1"),
       
@@ -370,6 +373,14 @@ server <- function(input, output){
   }
   
   # This code updates the UI
+  output$helptext0 <- renderUI(
+    {
+      if(input$which == "None"){
+        helpText("0. Download example data: Use this tool to download the preprocessed data that are needed to reproduce the case studies in Jens, Pearse & Hamilton (2019).")
+      }
+    }
+  )
+  
   output$helptext1 <- renderUI(
     {
       if(input$which == "None"){
@@ -601,7 +612,7 @@ server <- function(input, output){
   )
   
   output$Output_name <- renderUI(
-    if(!(input$which %in% c("None", "Crop raster files"))){
+    if(!(input$which %in% c("None", "Crop raster files", "Download example data"))){
       textInput("output_name", "Enter descriptive name of output file (no extension)", "Output_File")
     }
   )
@@ -614,7 +625,7 @@ server <- function(input, output){
   
   output$submit_button <- renderUI(
     {
-      if(input$which != "None"){
+      if(!input$which %in% c("None", "Download example data")){
         actionButton("submit", "RUN GEOPROCESSING TOOL")
       }
     }
@@ -852,6 +863,10 @@ server <- function(input, output){
         # Bundles of (potentially) multiple files will be downloadable as a .zip archive
         outname <- "Downloads.zip"
       }
+      if(input$which == "Download example data"){
+        # Download example data from hard-coded file uploaded with the app
+        outname <- "ExampleDataDownload.zip"
+      }
       outname
       
     },
@@ -874,7 +889,7 @@ server <- function(input, output){
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
-      if(!(input$which %in% c("Project detection records", "Crop raster files"))){
+      if(!(input$which %in% c("Project detection records", "Crop raster files", "Download example data"))){
         efficiently_write_raster(the_data(), file)
       } 
       if(input$which == "Crop raster files") {
@@ -888,6 +903,9 @@ server <- function(input, output){
       if(input$which == "Project detection records") {
         shapefile(the_data(), paste0(input$output_name, ".shp"), overwrite = TRUE)
         zip(zipfile = file, files = Sys.glob(paste0("*", input$output_name, ".*")))
+      }
+      if(input$which == "Download example data"){
+        file.copy("ExampleData.zip", file)
       }
       
     }
