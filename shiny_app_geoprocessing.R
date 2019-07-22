@@ -376,7 +376,7 @@ server <- function(input, output){
   output$helptext0 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("0. Download example data: Use this tool to download the preprocessed data that are needed to reproduce the case studies in Jens, Pearse & Hamilton (2019).")
+        helpText("0. Download example data: Use this tool to download the preprocessed data that are needed to reproduce the case studies in Froese, Pearse & Hamilton (2019).")
       }
     }
   )
@@ -634,7 +634,11 @@ server <- function(input, output){
   output$download_button <- renderUI(
     {
       if(input$which != "None"){
-        downloadButton("Download", "DOWNLOAD OUTPUT(S)")
+        if(input$which != "Download example data"){
+          downloadButton("Download", "DOWNLOAD OUTPUT(S)")
+        } else {
+          downloadButton("Download", "DOWNLOAD EXAMPLE DATA")
+        }
       }
     }
   )
