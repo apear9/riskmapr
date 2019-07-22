@@ -17,7 +17,7 @@ rm(list = ls())
 ## The regular expression ".tif$" should isolate only the .tif rasters
 ## and nothing else. 
 ## I can't guarantee this will always work, especially if you have
-## done anything to the files in S4_Appendix. 
+## done anything to the files in sensitivity_analysis/Data. 
 ## It worked for me, though. 
 
 all_rasters <- dir(".", ".tif$", recursive = T, full.names = T)
