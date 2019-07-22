@@ -7,12 +7,12 @@
 rm(list = ls())
 
 ## Working directory
-## [...] should point to S4_Appendix
+## [...] needs to point to sensitivity_analysis (the root folder for the sensitivity analysis code) 
 
-setwd("[...]/MexicanBeanTree")
+setwd("[...]/Data/MexicanBeanTree/Riskfactors_susceptibility")
 
 ## Source functions
-## [...] must point to sensitivity_analysis
+## [...] needs to point to sensitivity_analysis (the root folder)
 
 source("[...]/numerical_state_functions.R")
 source("[...]/sensitivity_functions.R")

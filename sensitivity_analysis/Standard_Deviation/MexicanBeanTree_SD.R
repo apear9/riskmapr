@@ -7,24 +7,24 @@
 rm(list = ls())
 
 ## Working directory
-## The [...] should point to the S4_Appendix folder
+## The [...] should point to the sensitivity_analysis folder
 
-setwd("[...]/MexicanBeanTree")
+setwd("[...]/Data/MexicanBeanTree/Riskfactors_susceptibility")
 
 ## Find raster files we want to process
 
-files <- dir(pattern = ".tif", recursive = TRUE)
+files <- dir(pattern = ".tif$", recursive = TRUE)
 
 ## Rasters
 
-elev <- paste0("./Riskfactors_susceptibility/", c("DP1/Elevation.tif", "DP2/Elevation_DP2.tif", "DP3/Elevation_CECRSPPP_DP3.tif", "DP4/Elevation_CECRSPPP_DP4.tif", "DP5/Elevation_CECRSPPP_DP5.tif", "DP6/Elevation_CECRSPPP_DP6.tif"))
-rain <- paste0("./Riskfactors_susceptibility/", c("DP1/RainDriestMonth.tif", "DP2/RainDriestMonth_DP2.tif", "DP3/RainDriestMonth_CECRSPPP_DP3.tif", "DP4/RainDriestMonth_CECRSPPP_DP4.tif", "DP5/RainDriestMonth_CECRSPPP_DP5.tif", "DP6/RainDriestMonth_CECRSPPP_DP6.tif"))
-vegl <- paste0("./Riskfactors_susceptibility/", c("DP1/VegetationLandUse.tif", "DP2/VegetationLandUse_DP2.tif", "DP3/VegetationLandUse_CECRSPPP_DP3.tif", "DP4/VegetationLandUse_CECRSPPP_DP4.tif", "DP5/VegetationLandUse_CECRSPPP_DP5.tif", "DP6/VegetationLandUse_CECRSPPP_DP6.tif"))
-soil <- paste0("./Riskfactors_susceptibility/", c("DP1/SoilMoisture.tif", "DP2/SoilMoisture_DP2.tif", "DP3/SoilMoisture_CECRSPPP_DP3.tif", "DP4/SoilMoisture_CECRSPPP_DP4.tif", "DP5/SoilMoisture_CECRSPPP_DP5.tif", "DP6/SoilMoisture_CECRSPPP_DP6.tif"))
-canp <- paste0("./Riskfactors_susceptibility/", c("DP1/CanopyCover.tif", "DP2/CanopyCover_DP2.tif", "DP3/CanopyCover_CECRSPPP_DP3.tif", "DP4/CanopyCover_CECRSPPP_DP4.tif", "DP5/CanopyCover_CECRSPPP_DP5.tif", "DP6/CanopyCover_CECRSPPP_DP6.tif"))
-hydc <- paste0("./Riskfactors_susceptibility/", c("DP1/Hydrochory.tif", "DP2/Hydrochory_DP2.tif", "DP3/Hydrochory_CECRSPPP_DP3.tif", "DP4/Hydrochory_CECRSPPP_DP4.tif", "DP5/Hydrochory_CECRSPPP_DP5.tif", "DP6/Hydrochory_CECRSPPP_DP6.tif"))
-prgs <- paste0("./Riskfactors_susceptibility/", c("DP1/PropaguleSupply.tif", "DP2/PropaguleSupply_DP2.tif", "DP3/PropaguleSupply_CECRSPPP_DP3.tif", "DP4/PropaguleSupply_CECRSPPP_DP4.tif", "DP5/PropaguleSupply_CECRSPPP_DP5.tif", "DP6/PropaguleSupply_CECRSPPP_DP6.tif"))
-zooc <- paste0("./Riskfactors_susceptibility/", c("DP1/Zoochory.tif", "DP2/Zoochory_DP2.tif", "DP3/Zoochory_CECRSPPP_DP3.tif", "DP4/Zoochory_CECRSPPP_DP4.tif", "DP5/Zoochory_CECRSPPP_DP5.tif", "DP6/Zoochory_CECRSPPP_DP6.tif"))
+elev <- c("DP1/Elevation.tif", "DP2/Elevation_DP2.tif", "DP3/Elevation_CECRSPPP_DP3.tif", "DP4/Elevation_CECRSPPP_DP4.tif", "DP5/Elevation_CECRSPPP_DP5.tif", "DP6/Elevation_CECRSPPP_DP6.tif")
+rain <- c("DP1/RainDriestMonth.tif", "DP2/RainDriestMonth_DP2.tif", "DP3/RainDriestMonth_CECRSPPP_DP3.tif", "DP4/RainDriestMonth_CECRSPPP_DP4.tif", "DP5/RainDriestMonth_CECRSPPP_DP5.tif", "DP6/RainDriestMonth_CECRSPPP_DP6.tif")
+vegl <- c("DP1/VegetationLandUse.tif", "DP2/VegetationLandUse_DP2.tif", "DP3/VegetationLandUse_CECRSPPP_DP3.tif", "DP4/VegetationLandUse_CECRSPPP_DP4.tif", "DP5/VegetationLandUse_CECRSPPP_DP5.tif", "DP6/VegetationLandUse_CECRSPPP_DP6.tif")
+soil <- c("DP1/SoilMoisture.tif", "DP2/SoilMoisture_DP2.tif", "DP3/SoilMoisture_CECRSPPP_DP3.tif", "DP4/SoilMoisture_CECRSPPP_DP4.tif", "DP5/SoilMoisture_CECRSPPP_DP5.tif", "DP6/SoilMoisture_CECRSPPP_DP6.tif")
+canp <- c("DP1/CanopyCover.tif", "DP2/CanopyCover_DP2.tif", "DP3/CanopyCover_CECRSPPP_DP3.tif", "DP4/CanopyCover_CECRSPPP_DP4.tif", "DP5/CanopyCover_CECRSPPP_DP5.tif", "DP6/CanopyCover_CECRSPPP_DP6.tif")
+hydc <- c("DP1/Hydrochory.tif", "DP2/Hydrochory_DP2.tif", "DP3/Hydrochory_CECRSPPP_DP3.tif", "DP4/Hydrochory_CECRSPPP_DP4.tif", "DP5/Hydrochory_CECRSPPP_DP5.tif", "DP6/Hydrochory_CECRSPPP_DP6.tif")
+prgs <- c("DP1/PropaguleSupply.tif", "DP2/PropaguleSupply_DP2.tif", "DP3/PropaguleSupply_CECRSPPP_DP3.tif", "DP4/PropaguleSupply_CECRSPPP_DP4.tif", "DP5/PropaguleSupply_CECRSPPP_DP5.tif", "DP6/PropaguleSupply_CECRSPPP_DP6.tif")
+zooc <-c("DP1/Zoochory.tif", "DP2/Zoochory_DP2.tif", "DP3/Zoochory_CECRSPPP_DP3.tif", "DP4/Zoochory_CECRSPPP_DP4.tif", "DP5/Zoochory_CECRSPPP_DP5.tif", "DP6/Zoochory_CECRSPPP_DP6.tif")
 
 ## Define detection periods
 
@@ -36,16 +36,15 @@ detp <- 1:6
 source("[...]/sensitivity_functions.R")
 
 ## Loop through files and calculate Continuous Boyce Index
-## Note, the [...] should point to S4_Appendix
-detections1<- readOGR("[...]/MexicanBeanTree/Detections/DP1_200809.shp")
-detections2 <- readOGR("[...]/MexicanBeanTree/Detections/DP2_200910.shp")
-detections3 <- readOGR("[...]/MexicanBeanTree/Detections/DP3_201011.shp")
-detections4 <- readOGR("[...]/MexicanBeanTree/Detections/DP4_201112.shp")
-detections5 <- readOGR("[...]/MexicanBeanTree/Detections/DP5_201213.shp")
-detections6 <- readOGR("[...]/MexicanBeanTree/Detections/DP6_201314.shp")
-detections7 <- readOGR("[...]/MexicanBeanTree/Detections/DP7_201415.shp")
-detections8 <- readOGR("[...]/MexicanBeanTree/Detections/DP8_201516.shp")
-detections9 <- readOGR("[...]/MexicanBeanTree/Detections/DP9_201617.shp")
+detections1<- readOGR("../Detections/DP1_200809.shp")
+detections2 <- readOGR("../Detections/DP2_200910.shp")
+detections3 <- readOGR("../Detections/DP3_201011.shp")
+detections4 <- readOGR("../Detections/DP4_201112.shp")
+detections5 <- readOGR("../Detections/DP5_201213.shp")
+detections6 <- readOGR("../Detections/DP6_201314.shp")
+detections7 <- readOGR("../Detections/DP7_201415.shp")
+detections8 <- readOGR("../Detections/DP8_201516.shp")
+detections9 <- readOGR("../Detections/DP9_201617.shp")
 dets_1 <- rbind(
   detections2,
   detections3,

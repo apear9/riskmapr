@@ -6,12 +6,13 @@
 rm(list = ls())
 
 ## Working directory
+## The [...] should point to the sensitivity_analysis folder
 
-setwd("[...]/HudsonPear")
+setwd("[...]/Data/HudsonPear/Riskfactors_susceptibility")
 
 ## Find raster files we want to process
 
-files <- dir(pattern = ".tif", recursive = TRUE)
+files <- dir(pattern = ".tif$", recursive = TRUE)
 
 ## Rasters
 
@@ -45,14 +46,15 @@ for(i in detp){
 source("[...]/sensitivity_functions.R")
 
 ## Loop through files and calculate Continuous Boyce Index
+## This code assumes the working directory has already been set correctly and the folder structure from the GitHub repo has been preserved
 indices <- sort(as.character(1:20))
 ind_ord <- order(as.numeric(indices))
-detections1<- readOGR("[...]/HudsonPear/Detections/DP1_201112.shp")
-detections2 <- readOGR("[...]/HudsonPear/Detections/DP2_201213.shp")
-detections3 <- readOGR("[...]/HudsonPear/Detections/DP3_201314.shp")
-detections4 <- readOGR("[...]/HudsonPear/Detections/DP4_201510.shp")
-detections5 <- readOGR("[...]/HudsonPear/Detections/DP5_201701.shp")
-detections6 <- readOGR("[...]/HudsonPear/Detections/DP6_201708.shp")
+detections1<- readOGR("../Detections/DP1_201112.shp")
+detections2 <- readOGR("../Detections/DP2_201213.shp")
+detections3 <- readOGR("../Detections/DP3_201314.shp")
+detections4 <- readOGR("../Detections/DP4_201510.shp")
+detections5 <- readOGR("../Detections/DP5_201701.shp")
+detections6 <- readOGR("../Detections/DP6_201708.shp")
 dets_1 <- rbind(
   detections2,
   detections3

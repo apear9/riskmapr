@@ -7,12 +7,12 @@
 rm(list = ls())
 
 ## Working directory
-## [...] must point to S4_Appendix
+## [...] needs to point to sensitivity_analysis (the root folder for the sensitivity analysis code) 
 
-setwd("[...]/HudsonPear")
+setwd("[...]/Data/HudsonPear/Riskfactors_susceptibility")
 
 ## Source functions
-## [...] needs to point to sensitivity_analysis
+## [...] needs to point to sensitivity_analysis (the root folder)
 
 source("[...]/numerical_state_functions.R")
 source("[...]/sensitivity_functions.R")
@@ -24,7 +24,7 @@ file.remove(to_delete)
 
 ## Find files to recode
 
-files <- dir(pattern = ".tif", recursive = TRUE)
+files <- dir(pattern = ".tif$", recursive = TRUE)
 
 ## Recoding loop
 

@@ -7,9 +7,9 @@
 rm(list = ls())
 
 ## Working directory
-## The [...] should point to S4_Appendix
+## The [...] should point to the sensitivity_analysis folder
 
-setwd("[...]/HudsonPear")
+setwd("[...]/Data/HudsonPear/Riskfactors_susceptibility")
 
 ## Find raster files we want to process
 
@@ -45,14 +45,19 @@ for(i in detp){
 source("[...]/sensitivity_functions.R")
 
 ## Import detection records
-## The [...] here should point to S4_Appendix
 
-detections1<- readOGR("[...]/HudsonPear/Detections/DP1_201112.shp")
-detections2 <- readOGR("[...]/HudsonPear/Detections/DP2_201213.shp")
-detections3 <- readOGR("[...]/HudsonPear/Detections/DP3_201314.shp")
-detections4 <- readOGR("[...]/HudsonPear/Detections/DP4_201510.shp")
-detections5 <- readOGR("[...]/HudsonPear/Detections/DP5_201701.shp")
-detections6 <- readOGR("[...]/HudsonPear/Detections/DP6_201708.shp")
+detections1<- readOGR("../Detections/DP1_201112.shp")
+detections1@coords <- detections1@coords[,-3]
+detections2 <- readOGR("../Detections/DP2_201213.shp")
+detections2@coords <- detections2@coords[,-3]
+detections3 <- readOGR("../Detections/DP3_201314.shp")
+detections3@coords <- detections3@coords[,-3]
+detections4 <- readOGR("../Detections/DP4_201510.shp")
+detections4@coords <- detections4@coords[,-3]
+detections5 <- readOGR("../Detections/DP5_201701.shp")
+detections5@coords <- detections5@coords[,-3]
+detections6 <- readOGR("../Detections/DP6_201708.shp")
+detections6@coords <- detections6@coords[,-3]
 dets_1 <- rbind(
   detections2,
   detections3

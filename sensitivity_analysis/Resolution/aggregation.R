@@ -10,9 +10,8 @@ rm(list = ls())
 library(raster)
 
 ## Working directory for Hudson Pear aggregations
-## The [...] needs to point to the folder S4_Appendix, which is the 
-## dataset for this paper. 
-setwd("[...]/HudsonPear")
+## The [...] needs to point to the folder sensitivity_analysis, the root directory for all the sensitivity analysis code
+setwd("[...]/Data/HudsonPear/Riskfactors_susceptibility")
 
 ## Find files to load in
 ## These should all be .tif rasters
@@ -30,7 +29,7 @@ for(i in 1:num_rasters){
 }
 
 ## Working directory for Mexican Bean Tree aggregations
-setwd("[...]/MexicanBeanTree")
+setwd("[...]/Data/MexicanBeanTree/Riskfactors_susceptibility")
 
 ## Find files to load in
 all_rasters <- dir(pattern = ".tif$", recursive = T)

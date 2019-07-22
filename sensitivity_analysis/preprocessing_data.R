@@ -4,10 +4,10 @@
 ### Alan R. Pearse
 
 ## Working directory
-## You need to set this to the folder S4_Appendix,
-## which is the dataset that comes with the manuscript
+## You need to set this to the folder 
+## sensitivity_analysis/Data
 
-setwd("[...]")
+setwd("[...]/sensitivity_analysis/Data")
 
 ## Clear workspace
 

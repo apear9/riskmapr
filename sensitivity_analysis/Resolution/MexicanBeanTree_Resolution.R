@@ -7,14 +7,13 @@
 rm(list = ls())
 
 ## Working directory
-## The [...] should point to the folder S4_Appendix, which is the dataset
-## published with the paper
+## The [...] should point to the folder sensitivity_analysis
 
-setwd("[...]/MexicanBeanTree")
+setwd("[...]/Data/MexicanBeanTree/Riskfactors_susceptibility")
 
 ## Find raster files we want to process
 
-files <- dir(pattern = ".tif", recursive = TRUE)
+files <- dir(pattern = ".tif$", recursive = TRUE)
 
 ## Rasters
 
@@ -51,16 +50,16 @@ source("[...]/sensitivity_functions.R")
 indices <- sort(as.character(1:40))
 ind_ord <- order(as.numeric(indices))
 
-## Note here you have to set [...] to point to S4_Appendix
-detections1<- readOGR("[...]/MexicanBeanTree/Detections/DP1_200809.shp")
-detections2 <- readOGR("[...]/MexicanBeanTree/Detections/DP2_200910.shp")
-detections3 <- readOGR("[...]/MexicanBeanTree/Detections/DP3_201011.shp")
-detections4 <- readOGR("[...]/MexicanBeanTree/Detections/DP4_201112.shp")
-detections5 <- readOGR("[...]/MexicanBeanTree/Detections/DP5_201213.shp")
-detections6 <- readOGR("[...]/MexicanBeanTree/Detections/DP6_201314.shp")
-detections7 <- readOGR("[...]/MexicanBeanTree/Detections/DP7_201415.shp")
-detections8 <- readOGR("[...]/MexicanBeanTree/Detections/DP8_201516.shp")
-detections9 <- readOGR("[...]/MexicanBeanTree/Detections/DP9_201617.shp")
+## Note, this code assumes the working directory has been correctly set
+detections1<- readOGR("../Detections/DP1_200809.shp")
+detections2 <- readOGR("../Detections/DP2_200910.shp")
+detections3 <- readOGR("../Detections/DP3_201011.shp")
+detections4 <- readOGR("../Detections/DP4_201112.shp")
+detections5 <- readOGR("../Detections/DP5_201213.shp")
+detections6 <- readOGR("../Detections/DP6_201314.shp")
+detections7 <- readOGR("../Detections/DP7_201415.shp")
+detections8 <- readOGR("../Detections/DP8_201516.shp")
+detections9 <- readOGR("../Detections/DP9_201617.shp")
 dets_1 <- rbind(
   detections2,
   detections3,
