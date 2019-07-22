@@ -21,7 +21,7 @@ ui <- fluidPage(
         label = "Select the geoprocessing workflow you need:",
         choices = c(
           "None", 
-          "Download example data",
+          "Download case study data",
           "Project detection records", 
           #"Project raster", 
           "Crop raster files", 
@@ -102,6 +102,8 @@ ui <- fluidPage(
       uiOutput("Crop_output_name"),
       
       uiOutput("submit_button"),
+      
+      uiOutput("a_readme_note"),
       
       uiOutput("download_button")
       
@@ -372,11 +374,20 @@ server <- function(input, output){
     
   }
   
+  # This code creates the readme note for the Download case study data tool
+  output$a_readme_note <- renderUI(
+    {
+      if(input$which == "Download case study data"){
+        helpText("The downloaded .zip archive contains a README file that describes the contents of the data package and how they should be used in riskmapr.")
+      }
+    }
+  )
+  
   # This code updates the UI
   output$helptext0 <- renderUI(
     {
       if(input$which == "None"){
-        helpText("0. Download example data: Use this tool to download the preprocessed data that are needed to reproduce the case studies in Froese, Pearse & Hamilton (2019).")
+        helpText("0. Download case study data: Use this tool to download the preprocessed data that are needed to reproduce the case studies in Froese, Pearse & Hamilton (2019).")
       }
     }
   )
@@ -612,7 +623,7 @@ server <- function(input, output){
   )
   
   output$Output_name <- renderUI(
-    if(!(input$which %in% c("None", "Crop raster files", "Download example data"))){
+    if(!(input$which %in% c("None", "Crop raster files", "Download case study data"))){
       textInput("output_name", "Enter descriptive name of output file (no extension)", "Output_File")
     }
   )
@@ -625,7 +636,7 @@ server <- function(input, output){
   
   output$submit_button <- renderUI(
     {
-      if(!input$which %in% c("None", "Download example data")){
+      if(!input$which %in% c("None", "Download case study data")){
         actionButton("submit", "RUN GEOPROCESSING TOOL")
       }
     }
@@ -634,10 +645,10 @@ server <- function(input, output){
   output$download_button <- renderUI(
     {
       if(input$which != "None"){
-        if(input$which != "Download example data"){
+        if(input$which != "Download case study data"){
           downloadButton("Download", "DOWNLOAD OUTPUT(S)")
         } else {
-          downloadButton("Download", "DOWNLOAD EXAMPLE DATA")
+          downloadButton("Download", "DOWNLOAD CASE STUDY DATA")
         }
       }
     }
@@ -867,9 +878,9 @@ server <- function(input, output){
         # Bundles of (potentially) multiple files will be downloadable as a .zip archive
         outname <- "Downloads.zip"
       }
-      if(input$which == "Download example data"){
-        # Download example data from hard-coded file uploaded with the app
-        outname <- "ExampleDataDownload.zip"
+      if(input$which == "Download case study data"){
+        # Download case study data from hard-coded file uploaded with the app
+        outname <- "Case_Study_Data.zip"
       }
       outname
       
@@ -893,7 +904,7 @@ server <- function(input, output){
       if(length(Sys.glob("*.tif")) > 0){
         file.remove(Sys.glob("*.tif"))
       }
-      if(!(input$which %in% c("Project detection records", "Crop raster files", "Download example data"))){
+      if(!(input$which %in% c("Project detection records", "Crop raster files", "Download case study data"))){
         efficiently_write_raster(the_data(), file)
       } 
       if(input$which == "Crop raster files") {
@@ -908,8 +919,8 @@ server <- function(input, output){
         shapefile(the_data(), paste0(input$output_name, ".shp"), overwrite = TRUE)
         zip(zipfile = file, files = Sys.glob(paste0("*", input$output_name, ".*")))
       }
-      if(input$which == "Download example data"){
-        file.copy("ExampleData.zip", file)
+      if(input$which == "Download case study data"){
+        file.copy("CaseStudyData.zip", file)
       }
       
     }
