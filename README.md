@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/168466330.svg)](https://zenodo.org/badge/latestdoi/168466330)
+
 # The riskmapr shiny apps
 
 This website/GitHub repository is for the suite of riskmapr shiny apps. In this document, we outline how to download and run them. 
