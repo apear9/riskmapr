@@ -39,7 +39,7 @@ To reproduce the Numerical_Values sensitivity analysis,
 4. For the chosen species, open the associated [SPECIES_NAME]_Numerical.R file. 
 5. Adjust the setwd() commands / file paths as indicated in the script file and run the script from start to finish.
 
-To reproduce the Resoluion sensitivity analysis, 
+To reproduce the Resolution sensitivity analysis, 
 
 1. Open the aggregation.R file.
 2. Adjust the setwd() commands / file paths as indicated in the script file. Run the script from start to finish. 
@@ -53,3 +53,15 @@ To reproduce the Standard_Deviation sensitivity analysis,
 2. For the chosen species, open the associated [SPECIES_NAME]_SD.R file.
 3. Adjust the setwd() commands / file paths as indicated in the script file and run the script from start to finish. 
 
+## Other advice
+
+The scripts [SPECIES_NAME]_Recoding.R and aggregation.R do very different things to the raster data.
+
+Each creates a new set of rasters based on those already in the Riskfactors_susceptibility folders.
+
+Consequently, you should not run both on the same set of data. It is a good idea to instead
+
+1. Make a back-up of the data folder
+2. Run either the Numerical_Values or Resolution sensitivity analysis on the data in the original data folder
+3. Once finished, copy the results of the sensitivity analysis to a different folder
+4. Replace the original data folder with the back-up made at step 1. 
