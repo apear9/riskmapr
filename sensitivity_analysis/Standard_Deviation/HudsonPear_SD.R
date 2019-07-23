@@ -37,17 +37,17 @@ source("[...]/sensitivity_functions.R")
 
 ## Loop through files and calculate Continuous Boyce Index
 ## The [...] here should point to the S4_Appendix folder
-detections1<- readOGR("../Detections/DP1_201112_CYLIROSE.shp")
+detections1<- readOGR("../Detections/DP1_201112.shp")
 detections1@coords <- detections1@coords[,-3]
-detections2 <- readOGR("../Detections/DP2_201213_CYLIROSE.shp")
+detections2 <- readOGR("../Detections/DP2_201213.shp")
 detections2@coords <- detections2@coords[,-3]
-detections3 <- readOGR("../Detections/DP3_201314_CYLIROSE.shp")
+detections3 <- readOGR("../Detections/DP3_201314.shp")
 detections3@coords <- detections3@coords[,-3]
-detections4 <- readOGR("../Detections/DP4_201510_CYLIROSE.shp")
+detections4 <- readOGR("../Detections/DP4_201510.shp")
 detections4@coords <- detections4@coords[,-3]
-detections5 <- readOGR("../Detections/DP5_201701_CYLIROSE.shp")
+detections5 <- readOGR("../Detections/DP5_201701.shp")
 detections5@coords <- detections5@coords[,-3]
-detections6 <- readOGR("../Detections/DP6_201708_CYLIROSE.shp")
+detections6 <- readOGR("../Detections/DP6_201708.shp")
 detections6@coords <- detections6@coords[,-3]
 dets_1 <- rbind(
   detections2,
