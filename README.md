@@ -4,6 +4,8 @@
 
 This website/GitHub repository is for the suite of riskmapr shiny apps. In this document, we outline how to download and run them. 
 
+The underlying methodology is outlined in Froese, Pearse and Hamilton (2019).
+
 ## Contents of the repository
 
 The GitHub repository apear9/riskmapr contains three .R files corresponding to the three riskmapr Shiny apps:
@@ -81,3 +83,7 @@ Once the shinyapps.io account has been created, simply:
 * Thirdly, click the Publish button (3. in the figure above).
 * R may prompt you to install packages. Do this if required. 
 * A new window should open detailing the progress of RStudio in deploying the app to your shinyapps.io account. An internet browser window will open once this is complete, and you will be able to use the app online. The URL can be shared with anyone. 
+
+## References
+
+Froese, J., Pearse, A.R., and Hamilton, G. (2019). Rapid spatial risk modelling for management of early weed invasions: balancing ecological complexity and operational needs. *Methods in Ecology and Evolution*. doi: 10.1111/2041‐210X.13284
