@@ -106,7 +106,7 @@ for(i in detp){
       persistence_sd = j + 5, # numeric
       establishment_wts = c(1, 2), # numeric vec
       establishment_sd = j + 5, # numeric
-      propagule_wts = c(3, 2, 3), # numeric vec
+      propagule_wts = c(2, 3, 3), # numeric vec
       propagule_sd = j + 5, # numeric
       suitability_sd = j, # numeric
       susceptibility_sd = j # numeric
